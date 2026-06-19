@@ -1,34 +1,116 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { HeartPulse, Lock, User, AlertCircle } from "lucide-react";
+import { HeartPulse, Lock, User, AlertCircle, MapPin, Phone, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const MOCK_LOCATIONS = [
+  { name: "Bản Khuôi, xã Quảng Khê", latitude: 22.425, longitude: 105.635 },
+  { name: "Bản Thi, xã Bản Thi", latitude: 22.390, longitude: 105.580 },
+  { name: "Xã Quảng Khê, Ba Bể", latitude: 22.410, longitude: 105.610 },
+  { name: "Xã Bằng Phúc, Chợ Đồn", latitude: 22.385, longitude: 105.590 },
+  { name: "Thôn Nà Phặc, Ngân Sơn", latitude: 22.450, longitude: 105.650 },
+];
 
 export default function Login() {
   const navigate = useNavigate();
+  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  // Registration States
+  const [patientName, setPatientName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [selectedLocIndex, setSelectedLocIndex] = useState(0);
+  const [gpsCoords, setGpsCoords] = useState({ latitude: 22.415, longitude: 105.625 });
+  const [gpsStatus, setGpsStatus] = useState("Sử dụng GPS mặc định của Bản");
+
+  // Sync GPS default location on selector change
+  useEffect(() => {
+    if (isRegister && MOCK_LOCATIONS[selectedLocIndex]) {
+      setGpsCoords({
+        latitude: MOCK_LOCATIONS[selectedLocIndex].latitude,
+        longitude: MOCK_LOCATIONS[selectedLocIndex].longitude
+      });
+      setGpsStatus("Sử dụng GPS mặc định của Bản");
+    }
+  }, [selectedLocIndex, isRegister]);
+
+  const handleGetDeviceGPS = () => {
+    if ("geolocation" in navigator) {
+      setGpsStatus("Đang định vị...");
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setGpsCoords({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          setGpsStatus("📍 Định vị thành công từ thiết bị của bạn!");
+        },
+        (err) => {
+          console.warn("Lỗi lấy GPS:", err);
+          setGpsStatus("Không thể lấy GPS thiết bị. Sử dụng tọa độ của bản.");
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else {
+      setGpsStatus("Thiết bị không hỗ trợ định vị GPS.");
+    }
+  };
+
+  const handleAuth = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // Giả lập độ trễ mạng
-    setTimeout(() => {
-      const u = username.toLowerCase().trim();
-      if (u === "benhnhan" || u === "patient") {
-        navigate("/patient");
-      } else if (u === "nuhoisinh" || u === "midwife") {
-        navigate("/midwife");
-      } else if (u === "bacsi" || u === "doctor") {
-        navigate("/doctor");
+    try {
+      const endpoint = isRegister ? "register" : "login";
+      const payload = isRegister ? {
+        username: username.trim(),
+        password,
+        patientName: patientName.trim(),
+        phone_number: phone.trim(),
+        location: MOCK_LOCATIONS[selectedLocIndex].name,
+        latitude: gpsCoords.latitude,
+        longitude: gpsCoords.longitude
+      } : {
+        username: username.trim(),
+        password
+      };
+
+      const res = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await res.json();
+      setIsLoading(false);
+
+      if (res.ok && data.success) {
+        // Save user details to LocalStorage
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        // Redirect based on role
+        const role = data.user.role;
+        if (role === "PATIENT") {
+          navigate("/patient");
+        } else if (role === "MIDWIFE") {
+          navigate("/midwife");
+        } else if (role === "DOCTOR") {
+          navigate("/doctor");
+        } else if (role === "COMMUNITY_WORKER") {
+          navigate("/community");
+        }
       } else {
-        setError("Tên đăng nhập hoặc mật khẩu không chính xác. Thử 'benhnhan', 'nuhoisinh', hoặc 'bacsi'.");
-        setIsLoading(false);
+        setError(data.error || "Có lỗi xảy ra. Vui lòng kiểm tra lại.");
       }
-    }, 800);
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+      setError("Không thể kết nối đến máy chủ.");
+    }
   };
 
   return (
@@ -37,27 +119,27 @@ export default function Login() {
       {/* Background elements */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60"></div>
-
+ 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white z-10 relative"
       >
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-100 text-rose-700 rounded-full mb-4">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-100 text-rose-700 rounded-full mb-3">
             <HeartPulse className="w-8 h-8" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900">Đăng Nhập</h2>
-          <p className="text-gray-500 mt-2">Hệ thống ViTem Triage AI</p>
+          <h2 className="text-3xl font-extrabold text-gray-900">{isRegister ? "Đăng Ký Mẹ Bầu" : "Đăng Nhập"}</h2>
+          <p className="text-gray-500 mt-2">Hệ thống phân loại thai kỳ ViTem</p>
         </div>
 
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {error && (
             <motion.div 
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-2 text-sm"
+              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 flex items-start gap-2 text-sm"
             >
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
@@ -65,66 +147,156 @@ export default function Login() {
           )}
         </AnimatePresence>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Tên đăng nhập</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Tên đăng nhập</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <User className="w-5 h-5 text-gray-400" />
+                <User className="w-4 h-4 text-gray-400" />
               </div>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ví dụ: benhnhan, nuhoisinh, bacsi"
-                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all"
+                placeholder={isRegister ? "Tên tài khoản viết liền không dấu" : "benhnhan, nuhoisinh, bacsi, congdong"}
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Mật khẩu</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Mật khẩu</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="w-5 h-5 text-gray-400" />
+                <Lock className="w-4 h-4 text-gray-400" />
               </div>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
                 required
               />
             </div>
-            <div className="flex justify-end mt-2">
-              <a href="#" className="text-sm font-medium text-rose-600 hover:text-rose-700">Quên mật khẩu?</a>
-            </div>
           </div>
+
+          {isRegister && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="space-y-4 pt-2 border-t border-gray-100"
+            >
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Họ và tên mẹ bầu</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                    placeholder="Ví dụ: Triệu Thị Hoa"
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Số điện thoại liên hệ</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Ví dụ: 0912345678"
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider font-semibold">Chọn bản/làng cư trú</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MapPin className="w-4 h-4 text-rose-700" />
+                  </div>
+                  <select
+                    value={selectedLocIndex}
+                    onChange={(e) => setSelectedLocIndex(parseInt(e.target.value))}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium appearance-none"
+                  >
+                    {MOCK_LOCATIONS.map((loc, idx) => (
+                      <option key={idx} value={idx}>{loc.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="bg-rose-50/50 p-3.5 rounded-2xl border border-rose-100 space-y-2 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-rose-900 flex items-center gap-1">
+                    <Compass className="w-3.5 h-3.5 animate-spin" /> {gpsStatus}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleGetDeviceGPS}
+                    className="text-[10px] font-bold bg-white text-[#8B1E32] px-2.5 py-1 rounded-md border border-rose-200 hover:bg-rose-50 transition-colors shadow-sm"
+                  >
+                    Lấy GPS Thiết Bị
+                  </button>
+                </div>
+                <div className="text-[11px] text-gray-500">
+                  Kinh độ: <strong className="text-gray-700">{gpsCoords.longitude.toFixed(5)}</strong>, 
+                  Vĩ độ: <strong className="text-gray-700">{gpsCoords.latitude.toFixed(5)}</strong>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           <button
             type="submit"
-            disabled={isLoading || !username || !password}
-            className="w-full py-4 bg-gradient-to-r from-rose-700 to-pink-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-70 disabled:active:scale-100 flex justify-center items-center h-14"
+            disabled={isLoading}
+            className="w-full py-3.5 bg-gradient-to-r from-[#8B1E32] to-rose-700 text-white rounded-xl font-bold text-base shadow-lg shadow-rose-600/20 active:scale-[0.98] transition-all disabled:opacity-70 flex justify-center items-center h-12"
           >
             {isLoading ? (
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
-              "Đăng Nhập"
+              isRegister ? "Đăng Ký Tài Khoản" : "Đăng Nhập"
             )}
           </button>
         </form>
-        
-        <div className="mt-8 text-center text-sm text-gray-500 bg-gray-50 p-4 rounded-xl border border-gray-100">
-          <p className="font-bold text-gray-700 mb-1">💡 Tài khoản Test (Demo):</p>
-          <ul className="space-y-1">
-            <li>Tên đăng nhập: <strong className="text-rose-600">benhnhan</strong> 👉 App Bệnh Nhân</li>
-            <li>Tên đăng nhập: <strong className="text-rose-600">nuhoisinh</strong> 👉 Ca Vàng</li>
-            <li>Tên đăng nhập: <strong className="text-rose-600">bacsi</strong> 👉 Ca Đỏ</li>
-            <li className="italic mt-2 text-xs">Mật khẩu: Nhập bất kỳ</li>
-          </ul>
+
+        <div className="mt-4 text-center">
+          <button 
+            onClick={() => {
+              setIsRegister(!isRegister);
+              setError("");
+            }}
+            className="text-sm font-bold text-rose-700 hover:text-rose-800 transition-colors"
+          >
+            {isRegister ? "Đã có tài khoản? Đăng nhập ngay" : "Chưa có tài khoản? Tạo tài khoản bệnh nhân"}
+          </button>
         </div>
+        
+        {!isRegister && (
+          <div className="mt-6 text-center text-[11px] text-gray-500 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+            <p className="font-bold text-gray-700 mb-1.5">💡 Đăng nhập thử nghiệm nhanh:</p>
+            <ul className="space-y-1 text-left inline-block">
+              <li>• <strong className="text-rose-700">benhnhan</strong> (Bệnh nhân Demo)</li>
+              <li>• <strong className="text-rose-700">nuhoisinh</strong> (Nữ Hộ Sinh)</li>
+              <li>• <strong className="text-rose-700">bacsi</strong> (Bác Sĩ Trưởng Khoa)</li>
+              <li>• <strong className="text-rose-700">congdong</strong> (Cán Bộ Cộng Đồng)</li>
+            </ul>
+          </div>
+        )}
       </motion.div>
     </div>
   );

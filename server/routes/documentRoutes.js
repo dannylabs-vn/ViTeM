@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-const { uploadDocument, getCases, approveCase, escalateCase } = require("../controllers/documentController");
+const { uploadDocument, getCases, updateCase, approveCase, escalateCase } = require("../controllers/documentController");
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
@@ -10,6 +10,9 @@ router.post("/upload", upload.single("document"), uploadDocument);
 
 // GET /api/documents
 router.get("/", getCases);
+
+// PUT /api/documents/:id
+router.put("/:id", updateCase);
 
 // POST /api/documents/:id/approve
 router.post("/:id/approve", approveCase);

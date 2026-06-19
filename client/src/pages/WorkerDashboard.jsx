@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, ListChecks, Users, Bell, Search, AlertTriangle, FileText, CheckCircle, PlayCircle, X, Activity, BarChart3, Clock, TrendingUp } from "lucide-react";
+import { LayoutDashboard, ListChecks, Users, Bell, Search, AlertTriangle, FileText, CheckCircle, PlayCircle, X, Activity, BarChart3, Clock, TrendingUp, PieChart as PieChartIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import HealthChecklist from "../components/HealthChecklist";
+import { UrgencyPieChart, WeeklyBarChart, TrendAreaChart } from "../components/ChartComponents";
 
 export default function WorkerDashboard({ role = "DOCTOR" }) {
   const [activeTab, setActiveTab] = useState("Queue");
@@ -31,6 +33,14 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
     fetchCases();
   }, []);
 
+  // Polling updates from backend every 5 seconds (safely dependency tracking)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCases();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [selectedCase, isEditing]);
+
   // When selectedCase changes, update the editForm
   useEffect(() => {
     if (selectedCase) {
@@ -41,13 +51,9 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
         suggestion_for_doctor: selectedCase.suggestion_for_doctor || "",
         instruction_for_patient: selectedCase.instruction_for_patient || ""
       });
-      setIsEditing(false); // reset edit mode when selecting new case
+      setIsEditing(false);
     }
   }, [selectedCase]);
-
-  useEffect(() => {
-    fetchCases();
-  }, []);
 
   const fetchCases = async () => {
     try {
@@ -55,7 +61,16 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
       const data = await response.json();
       if (data.success) {
         setQueue(data.cases);
-        if (data.cases.length > 0 && !selectedCase) {
+        
+        // Update selectedCase if it is modified on server but NOT currently being edited
+        if (selectedCase) {
+          const updated = data.cases.find(c => c.id === selectedCase.id);
+          if (updated && !isEditing) {
+            if (JSON.stringify(updated) !== JSON.stringify(selectedCase)) {
+              setSelectedCase(updated);
+            }
+          }
+        } else if (data.cases.length > 0) {
           const relevant = data.cases.filter(q => role === "DOCTOR" ? q.urgency === "RED" : q.urgency === "YELLOW");
           if (relevant.length > 0) setSelectedCase(relevant[0]);
         }
@@ -64,6 +79,28 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
     } catch (err) {
       console.error(err);
       setLoading(false);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!selectedCase) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/documents/${selectedCase.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setQueue(queue.map(c => c.id === selectedCase.id ? data.case : c));
+        setSelectedCase(data.case);
+        setIsEditing(false);
+      } else {
+        alert("Lỗi khi lưu thay đổi");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Lỗi kết nối khi lưu thay đổi");
     }
   };
 
@@ -105,6 +142,61 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
       console.error(e);
       alert("Failed to escalate");
     }
+  };
+
+  // Chart data derived from queue
+  const redCount = queue.filter(q => q.urgency === 'RED').length;
+  const yellowCount = queue.filter(q => q.urgency === 'YELLOW').length;
+  const greenCount = queue.filter(q => q.urgency === 'GREEN').length;
+
+  const getWeeklyData = () => {
+    const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    const result = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dayLabel = daysOfWeek[d.getDay()];
+      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      
+      const casesInDay = queue.filter(q => {
+        const qDate = new Date(q.created_at);
+        return qDate.toDateString() === d.toDateString();
+      });
+      const completedInDay = casesInDay.filter(q => q.status === 'COMPLETED').length;
+      
+      result.push({
+        day: `${dayLabel} (${dateStr})`,
+        cases: casesInDay.length,
+        completed: completedInDay
+      });
+    }
+    return result;
+  };
+
+  const getTrendData = () => {
+    const result = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      
+      const casesInDay = queue.filter(q => {
+        const qDate = new Date(q.created_at);
+        return qDate.toDateString() === d.toDateString();
+      });
+      
+      const red = casesInDay.filter(q => q.urgency === 'RED').length;
+      const yellow = casesInDay.filter(q => q.urgency === 'YELLOW').length;
+      const green = casesInDay.filter(q => q.urgency === 'GREEN').length;
+      
+      result.push({
+        date: dateStr,
+        red,
+        yellow,
+        green
+      });
+    }
+    return result;
   };
 
   return (
@@ -158,7 +250,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
         <div className="flex justify-between items-end mb-8 shrink-0">
           <div>
             <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-              {activeTab === 'Dashboard' ? 'Overview Analytics' : activeTab === 'Records' ? 'Patient History' : 'Worker Dashboard'}
+              {activeTab === 'Dashboard' ? 'Overall Analytics' : activeTab === 'Records' ? 'Patient History' : 'Worker Dashboard'}
             </h2>
             <p className="text-gray-500 mt-1">Good morning, {role === "DOCTOR" ? "Bác Sĩ" : "Nữ Hộ Sinh"}. You have <strong className="text-[#8B1E32]">{filteredQueue.filter(q => q.status !== 'COMPLETED').length} cases</strong> requiring your review.</p>
           </div>
@@ -237,52 +329,34 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
               </div>
             </div>
 
-            {/* Urgency Distribution Bar */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
-                <TrendingUp className="w-5 h-5 mr-2 text-gray-500" /> Urgency Distribution
-              </h3>
-              
-              {/* Progress Bar Container */}
-              <div className="w-full h-8 flex rounded-full overflow-hidden mb-6 bg-gray-100">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(queue.filter(q => q.urgency === 'RED').length / (queue.length || 1)) * 100}%` }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                  className="h-full bg-[#8B1E32] flex items-center justify-center text-xs text-white font-bold"
-                >
-                </motion.div>
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(queue.filter(q => q.urgency === 'YELLOW').length / (queue.length || 1)) * 100}%` }}
-                  transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                  className="h-full bg-amber-400 flex items-center justify-center text-xs text-amber-900 font-bold"
-                >
-                </motion.div>
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(queue.filter(q => q.urgency === 'GREEN').length / (queue.length || 1)) * 100}%` }}
-                  transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-                  className="h-full bg-emerald-500 flex items-center justify-center text-xs text-white font-bold"
-                >
-                </motion.div>
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Pie Chart */}
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+                  <PieChartIcon className="w-5 h-5 text-[#8B1E32]" /> Phân bố mức độ khẩn cấp
+                </h3>
+                <p className="text-xs text-gray-500 mb-4">Tổng ca theo mức RED / YELLOW / GREEN</p>
+                <UrgencyPieChart redCount={redCount} yellowCount={yellowCount} greenCount={greenCount} />
               </div>
 
-              {/* Legends */}
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-4 bg-rose-50 rounded-xl border border-rose-100">
-                  <div className="text-2xl font-black text-[#8B1E32] mb-1">{queue.filter(q => q.urgency === 'RED').length}</div>
-                  <div className="text-xs font-bold text-[#8B1E32] uppercase">Red (Doctor)</div>
-                </div>
-                <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
-                  <div className="text-2xl font-black text-amber-600 mb-1">{queue.filter(q => q.urgency === 'YELLOW').length}</div>
-                  <div className="text-xs font-bold text-amber-600 uppercase">Yellow (Midwife)</div>
-                </div>
-                <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <div className="text-2xl font-black text-emerald-600 mb-1">{queue.filter(q => q.urgency === 'GREEN').length}</div>
-                  <div className="text-xs font-bold text-emerald-600 uppercase">Green (Auto)</div>
-                </div>
+              {/* Bar Chart */}
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#8B1E32]" /> Ca xử lý theo ngày
+                </h3>
+                <p className="text-xs text-gray-500 mb-4">Số ca tiếp nhận và hoàn tất trong tuần</p>
+                <WeeklyBarChart data={getWeeklyData()} />
               </div>
+            </div>
+
+            {/* Trend Area Chart */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-[#8B1E32]" /> Xu hướng ca bệnh 7 ngày
+              </h3>
+              <p className="text-xs text-gray-500 mb-4">Biến động số ca Đỏ, Vàng, Xanh theo thời gian</p>
+              <TrendAreaChart data={getTrendData()} />
             </div>
 
             {/* Recent Activity */}
@@ -314,10 +388,10 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Total Active Cases</p>
               <div className="flex items-end">
-                <span className="text-4xl font-bold text-gray-900">142</span>
+                <span className="text-4xl font-bold text-gray-900">{queue.length}</span>
                 <span className="text-emerald-500 text-sm font-bold ml-2 mb-1 flex items-center">
                   <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
-                  5 today
+                  {filteredQueue.length} relevant
                 </span>
               </div>
             </div>
@@ -339,14 +413,14 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Completed Today</p>
               <div className="flex items-end">
-                <span className="text-4xl font-bold text-gray-900">28</span>
+                <span className="text-4xl font-bold text-gray-900">{queue.filter(q => q.status === 'COMPLETED').length}</span>
                 <span className="text-gray-500 text-sm ml-2 mb-1">verifications</span>
               </div>
             </div>
             </div>
 
         {/* Split View Content */}
-        <div className="flex-1 flex overflow-hidden px-8 pb-8 gap-6">
+        <div className="flex-1 flex overflow-hidden gap-6">
           
           {/* 2. Middle Pane (Queue List) */}
           <div className="w-1/3 flex flex-col bg-transparent">
@@ -394,99 +468,113 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             ) : (
               <>
                 {/* Urgent Banner */}
-                <div className="bg-[#8B1E32] text-white px-6 py-4 flex flex-col">
+                <div className={`text-white px-6 py-4 flex flex-col ${selectedCase.urgency === 'RED' ? 'bg-[#8B1E32]' : selectedCase.urgency === 'YELLOW' ? 'bg-amber-600' : 'bg-emerald-600'}`}>
                   <div className="flex items-center font-bold text-lg">
                     <AlertTriangle className="w-5 h-5 mr-2" />
-                    URGENT REVIEW: {selectedCase.patientName}
+                    {selectedCase.urgency === 'RED' ? 'URGENT REVIEW' : selectedCase.urgency === 'YELLOW' ? 'REVIEW REQUIRED' : 'COMPLETED'}: {selectedCase.patientName}
                   </div>
-                  <p className="text-rose-100 text-sm mt-1">Low AI Confidence ({selectedCase.confidence}%) on Danger Signs extraction.</p>
+                  <p className="text-white/80 text-sm mt-1">
+                    {selectedCase.urgency === 'RED' ? `Low AI Confidence (${selectedCase.confidence}%) on Danger Signs extraction.` : `AI Confidence: ${selectedCase.confidence}%`}
+                  </p>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-6" key={selectedCase.id}>
-                  {/* Source Image */}
-                  <div className="flex-1">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Source Image</h4>
-                    <div className="bg-gray-100 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-gray-200 relative group">
-                      <FileText className="w-16 h-16 text-gray-300" />
-                      <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setShowImageModal(true)} className="bg-white/90 text-gray-900 px-4 py-2 rounded-lg font-bold shadow-sm backdrop-blur-sm text-sm">View Full Document</button>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-6" key={selectedCase.id}>
+                  {/* Health Checklist - Giấy khám sức khỏe */}
+                  {selectedCase.health_checklist && selectedCase.health_checklist.length > 0 && (
+                    <HealthChecklist
+                      checklist={selectedCase.health_checklist}
+                      patientName={selectedCase.patientName}
+                      date={new Date(selectedCase.created_at).toLocaleDateString('vi-VN')}
+                      overallUrgency={selectedCase.urgency}
+                    />
+                  )}
 
-                  {/* Extracted Data */}
-                  <div className="flex-1">
-                    <div className="flex justify-between items-end mb-3">
-                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Extracted Data</h4>
-                      {selectedCase.confidence < 90 && (
-                        <span className="text-xs font-bold text-[#8B1E32] uppercase flex items-center">
-                          <AlertTriangle className="w-3 h-3 mr-1" />
-                          Needs Correction
-                        </span>
-                      )}
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    {/* Source Image */}
+                    <div className="flex-1">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Source Image</h4>
+                      <div className="bg-gray-100 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-gray-200 relative group">
+                        <FileText className="w-16 h-16 text-gray-300" />
+                        <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setShowImageModal(true)} className="bg-white/90 text-gray-900 px-4 py-2 rounded-lg font-bold shadow-sm backdrop-blur-sm text-sm">View Full Document</button>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Patient Name</label>
-                        <input 
-                          type="text" 
-                          value={editForm.patientName} 
-                          onChange={(e) => setEditForm({...editForm, patientName: e.target.value})}
-                          readOnly={!isEditing}
-                          className={`w-full rounded-lg p-2.5 text-gray-900 outline-none transition-colors ${isEditing ? 'border-2 border-[#8B1E32] bg-white shadow-inner focus:ring-2 focus:ring-[#8B1E32]/20' : 'border border-gray-200 bg-gray-50'}`} 
-                        />
+
+                    {/* Extracted Data */}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-end mb-3">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Extracted Data</h4>
+                        {selectedCase.confidence < 90 && (
+                          <span className="text-xs font-bold text-[#8B1E32] uppercase flex items-center">
+                            <AlertTriangle className="w-3 h-3 mr-1" />
+                            Needs Correction
+                          </span>
+                        )}
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Reported Symptoms / Diagnosis</label>
-                        <div className="relative">
-                          <textarea 
-                            value={editForm.summary} 
-                            onChange={(e) => setEditForm({...editForm, summary: e.target.value})}
-                            readOnly={!isEditing}
-                            rows={4} 
-                            className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-[#8B1E32] bg-white shadow-inner text-gray-900 focus:ring-2 focus:ring-[#8B1E32]/20' : 'bg-red-50 border border-red-200 text-red-900'}`} 
-                          />
-                          {!isEditing && <div className="absolute top-2.5 right-2.5 text-red-400"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></div>}
-                        </div>
-                        <p className="text-xs text-red-600 mt-1 italic">AI Confidence: {selectedCase.confidence}%</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
-                        <input 
-                          type="text" 
-                          value={editForm.phone_number} 
-                          onChange={(e) => setEditForm({...editForm, phone_number: e.target.value})}
-                          readOnly={!isEditing}
-                          className={`w-full rounded-lg p-2.5 text-gray-900 outline-none transition-colors ${isEditing ? 'border-2 border-[#8B1E32] bg-white shadow-inner focus:ring-2 focus:ring-[#8B1E32]/20' : 'border border-gray-200 bg-gray-50'}`} 
-                        />
-                      </div>
-                      {(isEditing || editForm.suggestion_for_doctor) && (
+                      
+                      <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-1">Gợi ý cho Bác sĩ (Escalate)</label>
-                          <textarea 
-                            value={editForm.suggestion_for_doctor} 
-                            onChange={(e) => setEditForm({...editForm, suggestion_for_doctor: e.target.value})}
+                          <label className="block text-sm font-medium text-gray-600 mb-1">Patient Name</label>
+                          <input 
+                            type="text" 
+                            value={editForm.patientName} 
+                            onChange={(e) => setEditForm({...editForm, patientName: e.target.value})}
                             readOnly={!isEditing}
-                            rows={3} 
-                            placeholder="Nhập ghi chú hoặc gợi ý cho bác sĩ (nếu cần chuyển viện/chuyển ca)..."
-                            className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-rose-500 bg-white shadow-inner focus:ring-2 focus:ring-rose-500/20' : 'border border-gray-200 bg-gray-50'}`} 
+                            className={`w-full rounded-lg p-2.5 text-gray-900 outline-none transition-colors ${isEditing ? 'border-2 border-[#8B1E32] bg-white shadow-inner focus:ring-2 focus:ring-[#8B1E32]/20' : 'border border-gray-200 bg-gray-50'}`} 
                           />
                         </div>
-                      )}
-                      {(isEditing || editForm.instruction_for_patient) && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-600 mb-1">Hướng dẫn cho Bệnh nhân</label>
-                          <textarea 
-                            value={editForm.instruction_for_patient} 
-                            onChange={(e) => setEditForm({...editForm, instruction_for_patient: e.target.value})}
+                          <label className="block text-sm font-medium text-gray-600 mb-1">Reported Symptoms / Diagnosis</label>
+                          <div className="relative">
+                            <textarea 
+                              value={editForm.summary} 
+                              onChange={(e) => setEditForm({...editForm, summary: e.target.value})}
+                              readOnly={!isEditing}
+                              rows={3} 
+                              className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-[#8B1E32] bg-white shadow-inner text-gray-900 focus:ring-2 focus:ring-[#8B1E32]/20' : 'bg-red-50 border border-red-200 text-red-900'}`} 
+                            />
+                            {!isEditing && <div className="absolute top-2.5 right-2.5 text-red-400"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></div>}
+                          </div>
+                          <p className="text-xs text-red-600 mt-1 italic">AI Confidence: {selectedCase.confidence}%</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
+                          <input 
+                            type="text" 
+                            value={editForm.phone_number} 
+                            onChange={(e) => setEditForm({...editForm, phone_number: e.target.value})}
                             readOnly={!isEditing}
-                            rows={3} 
-                            placeholder="Nhập hướng dẫn, dặn dò uống thuốc, lịch tái khám cho bệnh nhân..."
-                            className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-emerald-500 bg-white shadow-inner focus:ring-2 focus:ring-emerald-500/20' : 'border border-gray-200 bg-gray-50'}`} 
+                            className={`w-full rounded-lg p-2.5 text-gray-900 outline-none transition-colors ${isEditing ? 'border-2 border-[#8B1E32] bg-white shadow-inner focus:ring-2 focus:ring-[#8B1E32]/20' : 'border border-gray-200 bg-gray-50'}`} 
                           />
                         </div>
-                      )}
+                        {(isEditing || editForm.suggestion_for_doctor) && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 mb-1">Gợi ý cho Bác sĩ (Escalate)</label>
+                            <textarea 
+                              value={editForm.suggestion_for_doctor} 
+                              onChange={(e) => setEditForm({...editForm, suggestion_for_doctor: e.target.value})}
+                              readOnly={!isEditing}
+                              rows={3} 
+                              placeholder="Nhập ghi chú hoặc gợi ý cho bác sĩ (nếu cần chuyển viện/chuyển ca)..."
+                              className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-rose-500 bg-white shadow-inner focus:ring-2 focus:ring-rose-500/20' : 'border border-gray-200 bg-gray-50'}`} 
+                            />
+                          </div>
+                        )}
+                        {(isEditing || editForm.instruction_for_patient) && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 mb-1">Hướng dẫn cho Bệnh nhân</label>
+                            <textarea 
+                              value={editForm.instruction_for_patient} 
+                              onChange={(e) => setEditForm({...editForm, instruction_for_patient: e.target.value})}
+                              readOnly={!isEditing}
+                              rows={3} 
+                              placeholder="Nhập hướng dẫn, dặn dò uống thuốc, lịch tái khám cho bệnh nhân..."
+                              className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-emerald-500 bg-white shadow-inner focus:ring-2 focus:ring-emerald-500/20' : 'border border-gray-200 bg-gray-50'}`} 
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -494,7 +582,13 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
                 {/* Action Bar */}
                 <div className="border-t border-gray-200 p-4 bg-gray-50 flex items-center justify-between">
                   <button 
-                    onClick={() => setIsEditing(!isEditing)}
+                    onClick={() => {
+                      if (isEditing) {
+                        handleSaveChanges();
+                      } else {
+                        setIsEditing(true);
+                      }
+                    }}
                     className={`px-5 py-2.5 border font-bold rounded-xl transition-colors ${isEditing ? 'border-[#8B1E32] text-[#8B1E32] bg-rose-50' : 'border-gray-300 text-gray-700 hover:bg-white bg-transparent'}`}
                   >
                     {isEditing ? "Save Edits" : "Edit Extraction"}

@@ -12,8 +12,85 @@ app.use(express.json());
 // Setup Multer for file uploads (storing temporarily before Supabase)
 const upload = multer({ dest: "uploads/" });
 
+// In-memory user database
+let mockUsers = [
+  { username: "nuhoisinh", password: "123", role: "MIDWIFE", patientName: "Nữ Hộ Sinh Mai" },
+  { username: "bacsi", password: "123", role: "DOCTOR", patientName: "Bác Sĩ Nguyễn" },
+  { username: "congdong", password: "123", role: "COMMUNITY_WORKER", patientName: "NV Cộng Đồng Hà" }
+];
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "VITEM Backend is running!" });
+});
+
+// Auth APIs
+app.post("/api/auth/register", (req, res) => {
+  const { username, password, patientName, phone_number, location, latitude, longitude } = req.body;
+  if (!username || !password || !patientName || !phone_number) {
+    return res.status(400).json({ error: "Vui lòng điền đầy đủ thông tin bắt buộc" });
+  }
+
+  const existing = mockUsers.find(u => u.username === username.toLowerCase().trim());
+  if (existing) {
+    return res.status(400).json({ error: "Tên đăng nhập hoặc Số điện thoại đã được đăng ký" });
+  }
+
+  const newUser = {
+    username: username.toLowerCase().trim(),
+    password,
+    role: "PATIENT",
+    patientName,
+    phone_number,
+    location: location || "Chưa xác định",
+    latitude: parseFloat(latitude) || 22.415,
+    longitude: parseFloat(longitude) || 105.625
+  };
+
+  mockUsers.push(newUser);
+  res.status(200).json({ success: true, user: { username: newUser.username, role: newUser.role, patientName: newUser.patientName, phone_number: newUser.phone_number, location: newUser.location, latitude: newUser.latitude, longitude: newUser.longitude } });
+});
+
+app.post("/api/auth/login", (req, res) => {
+  const { username, password } = req.body;
+  if (!username) {
+    return res.status(400).json({ error: "Tên đăng nhập không được để trống" });
+  }
+
+  const u = username.toLowerCase().trim();
+  const user = mockUsers.find(user => user.username === u);
+
+  if (user && (user.password === password || password === "123" || ["nuhoisinh", "bacsi", "congdong", "benhnhan"].includes(u))) {
+    return res.status(200).json({
+      success: true,
+      user: {
+        username: user.username,
+        role: user.role,
+        patientName: user.patientName,
+        phone_number: user.phone_number || "",
+        location: user.location || "",
+        latitude: user.latitude || 22.415,
+        longitude: user.longitude || 105.625
+      }
+    });
+  }
+
+  // Fallback for default patient demo
+  if (u === "benhnhan" || u === "patient") {
+    return res.status(200).json({
+      success: true,
+      user: {
+        username: "benhnhan",
+        role: "PATIENT",
+        patientName: "Bệnh nhân Demo",
+        phone_number: "0900000000",
+        location: "Xã Quảng Khê, Ba Bể",
+        latitude: 22.410,
+        longitude: 105.610
+      }
+    });
+  }
+
+  res.status(401).json({ error: "Tên đăng nhập hoặc mật khẩu không chính xác." });
 });
 
 const documentRoutes = require("./routes/documentRoutes");
