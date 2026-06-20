@@ -8,7 +8,7 @@ function generateSmartFallbackData(symptoms = [], phoneMetadata) {
   const tayNames = ["Lò Thị Mai", "Nông Thị Hương", "Triệu Thị Lan", "Sầm Thị Hoa", "Ma Thị Xuân", "Lý Thị Diệu"];
   const randomName = tayNames[Math.floor(Math.random() * tayNames.length)];
   const suffixPhone = phoneMetadata ? phoneMetadata.slice(-4) : "1234";
-  const patientName = `${randomName} (SĐT: ...${suffixPhone})`;
+  const patientName = `${randomName} (Phone: ...${suffixPhone})`;
 
   // 1. Kiểm tra các triệu chứng Đỏ
   const hasRed = symptoms.some(s => ["sốt", "ra_máu", "vỡ_ối", "đau_bụng"].includes(s));
@@ -18,21 +18,21 @@ function generateSmartFallbackData(symptoms = [], phoneMetadata) {
   if (hasRed) {
     return {
       patientName,
-      summary: `Bệnh nhân có triệu chứng khẩn cấp: ${symptoms.map(s => s.replace('_', ' ')).join(', ')}. Nghi ngờ biến chứng nguy hại thai kỳ, cần can thiệp khẩn cấp từ bác sĩ trưởng khoa.`,
+      summary: `Patient has emergency symptoms: ${symptoms.map(s => s.replace('_', ' ')).join(', ')}. Suspicion of severe pregnancy complications, requiring immediate intervention from the head physician.`,
       urgency: "RED",
       confidence: 88,
       health_checklist: [
-        { label: "Triệu chứng khẩn cấp", value: "Có (" + symptoms.join(', ') + ")", tag: "RED", note: "Dấu hiệu nguy hiểm đe dọa thai nhi" },
-        { label: "Huyết áp", value: "148/95 mmHg", tag: "RED", note: "Huyết áp cao bất thường" },
-        { label: "Tim thai", value: "168 nhịp/phút", tag: "RED", note: "Tim thai nhanh, có dấu hiệu suy thai" },
-        { label: "Tuổi thai", value: "35 tuần", tag: "GREEN", note: "Thai gần đủ tháng" }
+        { label: "Emergency Symptoms", value: "Yes (" + symptoms.join(', ') + ")", tag: "RED", note: "Dangerous signs threatening the fetus" },
+        { label: "Blood Pressure", value: "148/95 mmHg", tag: "RED", note: "Abnormally high blood pressure" },
+        { label: "Fetal Heart Rate", value: "168 bpm", tag: "RED", note: "Rapid fetal heart rate, signs of fetal distress" },
+        { label: "Gestational Age", value: "35 weeks", tag: "GREEN", note: "Near term pregnancy" }
       ],
       checklist: [
-        "Nằm nghỉ ngơi tuyệt đối tại giường, nghiêng người về phía bên trái.",
-        "Gọi hỗ trợ y tế khẩn cấp, chuẩn bị hồ sơ chuyển viện đa khoa huyện.",
-        "Tuyệt đối không ăn uống gì thêm để sẵn sàng nếu có chỉ định mổ đẻ."
+        "Rest completely in bed, lie on your left side.",
+        "Call for emergency medical assistance, prepare documents for transfer to the district general hospital.",
+        "Do not consume any food or drink to be ready in case a C-section is scheduled."
       ],
-      warning_box: "Nguy cơ suy thai hoặc vỡ ối sớm. Cần cấp cứu y tế ngay lập tức!",
+      warning_box: "Risk of fetal distress or premature rupture of membranes. Emergency medical attention required immediately!",
       tay_translation: "Bệnh nhân đau bụng, chảy máu hoặc vỡ ối. Cần gọi bác sĩ khẩn cấp pây bệnh viện liền."
     };
   }
@@ -40,19 +40,19 @@ function generateSmartFallbackData(symptoms = [], phoneMetadata) {
   if (hasYellow) {
     return {
       patientName,
-      summary: `Bệnh nhân báo cáo triệu chứng cần theo dõi: ${symptoms.map(s => s.replace('_', ' ')).join(', ')}. Cần đo tim thai và khám thai trực tiếp tại trạm để kiểm tra sức khỏe thai nhi.`,
+      summary: `Patient reported symptoms requiring monitoring: ${symptoms.map(s => s.replace('_', ' ')).join(', ')}. Fetal heart rate measurement and direct clinical examination at the health station are needed.`,
       urgency: "YELLOW",
       confidence: 85,
       health_checklist: [
-        { label: "Triệu chứng", value: symptoms.join(', '), tag: "YELLOW", note: "Cần nữ hộ sinh kiểm tra lâm sàng" },
-        { label: "Huyết áp", value: "128/82 mmHg", tag: "GREEN", note: "Trong ngưỡng bình thường" },
-        { label: "Cử động thai (máy)", value: "< 10 lần/12h", tag: "YELLOW", note: "Thai ít máy, cần đo tim thai đồ (CTG)" },
-        { label: "Tuổi thai", value: "37 tuần", tag: "GREEN", note: "Phù hợp kích thước" }
+        { label: "Symptoms", value: symptoms.join(', '), tag: "YELLOW", note: "Requires clinical examination by midwife" },
+        { label: "Blood Pressure", value: "128/82 mmHg", tag: "GREEN", note: "Within normal range" },
+        { label: "Fetal Movements", value: "< 10 times/12h", tag: "YELLOW", note: "Reduced fetal movement, CTG monitoring required" },
+        { label: "Gestational Age", value: "37 weeks", tag: "GREEN", note: "Consistent with size" }
       ],
       checklist: [
-        "Theo dõi và đếm cử động thai (máy) mỗi 1 giờ.",
-        "Đến trạm y tế khám trong ngày để nghe tim thai và siêu âm ối.",
-        "Nằm nghỉ ngơi nghiêng trái và uống thêm nước ấm."
+        "Monitor and count fetal movements every hour.",
+        "Visit the health station today for fetal heart rate check and amniotic fluid ultrasound.",
+        "Rest lying on your left side and drink warm water."
       ],
       warning_box: null,
       tay_translation: "Thai ít máy, đau đầu. Cần pây trạm y tế kiểm tra tim thai đồ trong ngày."
@@ -64,38 +64,38 @@ function generateSmartFallbackData(symptoms = [], phoneMetadata) {
   if (randomUrgency === "RED") {
     return {
       patientName,
-      summary: "Kết quả siêu âm cho thấy chỉ số nước ối AFI rất thấp (4 cm), chẩn đoán thiểu ối nặng ở tuần thai 36. Huyết áp đo được 145/95 mmHg kèm theo protein niệu dương tính (+2). Nguy cơ cao tiền sản giật.",
+      summary: "Ultrasound indicates very low amniotic fluid index AFI (4 cm), severe oligohydramnios diagnosed at 36 weeks. Blood pressure measured at 145/95 mmHg with positive urine protein (+2). High risk of preeclampsia.",
       urgency: "RED",
       confidence: 90,
       health_checklist: [
-        { label: "Nước ối (AFI)", value: "4 cm", tag: "RED", note: "Thiểu ối nặng, đe dọa thai nhi" },
-        { label: "Huyết áp", value: "145/95 mmHg", tag: "RED", note: "Tăng huyết áp thai kỳ" },
-        { label: "Protein niệu", value: "+2", tag: "RED", note: "Liên quan đến tiền sản giật" },
-        { label: "Tim thai", value: "142 nhịp/phút", tag: "GREEN", note: "Trong giới hạn bình thường" }
+        { label: "Amniotic Fluid (AFI)", value: "4 cm", tag: "RED", note: "Severe oligohydramnios, threatening the fetus" },
+        { label: "Blood Pressure", value: "145/95 mmHg", tag: "RED", note: "Gestational hypertension" },
+        { label: "Urine Protein", value: "+2", tag: "RED", note: "Associated with preeclampsia" },
+        { label: "Fetal Heart Rate", value: "142 bpm", tag: "GREEN", note: "Within normal limits" }
       ],
       checklist: [
-        "Nằm nghiêng trái nghỉ ngơi hoàn toàn tại giường.",
-        "Uống 500ml nước ấm ngay lập tức và theo dõi lượng nước tiểu.",
-        "Liên hệ bác sĩ trưởng trạm để làm thủ tục chuyển tuyến trên."
+        "Rest completely in bed, lying on your left side.",
+        "Drink 500ml of warm water immediately and monitor urine output.",
+        "Contact the head of the health station to initiate referral process to a higher level."
       ],
-      warning_box: "Thiểu ối nặng kết hợp huyết áp cao nguy cơ tiền sản giật nguy hiểm. Cần chuyển viện ngay.",
+      warning_box: "Severe oligohydramnios combined with high blood pressure, high risk of dangerous preeclampsia. Immediate hospital transfer required.",
       tay_translation: "Nước ối nọi chắp, huyết áp cao. Cần pây bệnh viện huyện mổ đẻ gấp."
     };
   } else {
     return {
       patientName,
-      summary: "Kết quả kiểm tra đường huyết đói là 6.8 mmol/L (ngưỡng bình thường dưới 5.1). Thai phụ có biểu hiện khát nước nhiều và mệt mỏi nhẹ. Chẩn đoán theo dõi Đái tháo đường thai kỳ ở tuần thai 28.",
+      summary: "Fasting blood glucose test is 6.8 mmol/L (normal range is below 5.1). The pregnant woman reports excessive thirst and mild fatigue. Diagnosis: gestational diabetes monitoring at 28 gestational weeks.",
       urgency: "YELLOW",
       confidence: 92,
       health_checklist: [
-        { label: "Đường huyết đói", value: "6.8 mmol/L", tag: "YELLOW", note: "Tăng nhẹ, cần theo dõi tiểu đường thai kỳ" },
-        { label: "Tim thai", value: "135 nhịp/phút", tag: "GREEN", note: "Nhịp tim thai bình thường" },
-        { label: "Tuổi thai", value: "28 tuần", tag: "GREEN", note: "Phù hợp kích thước" }
+        { label: "Fasting Blood Glucose", value: "6.8 mmol/L", tag: "YELLOW", note: "Mildly elevated, monitor for gestational diabetes" },
+        { label: "Fetal Heart Rate", value: "135 bpm", tag: "GREEN", note: "Normal fetal heart rate" },
+        { label: "Gestational Age", value: "28 weeks", tag: "GREEN", note: "Consistent with size" }
       ],
       checklist: [
-        "Hạn chế tối đa tinh bột trắng, nước ngọt và các loại hoa quả quá ngọt.",
-        "Chia nhỏ bữa ăn làm 5-6 bữa một ngày để ổn định đường huyết.",
-        "Kiểm tra lại đường huyết sau ăn 2 giờ và tái khám sau 1 tuần."
+        "Minimize white starches, sugary drinks, and overly sweet fruits.",
+        "Divide meals into 5-6 small portions per day to stabilize blood glucose.",
+        "Recheck blood glucose 2 hours after meals and return for a follow-up in 1 week."
       ],
       warning_box: null,
       tay_translation: "Đường huyết hơi cao. Thai phụ cần kiêng ăn đồ ngọt, bánh kẹo và pây khám lại sau 1 tuần."
@@ -117,25 +117,25 @@ async function processMedicalDocument(imageBuffer, mimeType, phoneMetadata, symp
   const prompt = `
 You are an expert medical AI specialized in rural maternal health triage for the Tày ethnic minority in Vietnam.
 Read the attached medical document carefully.
-Extract the details and provide a JSON response:
+Extract the details and provide a JSON response (all outputs MUST be in English except for the tay_translation field):
 1. "patientName": The patient's full name extracted from the document if available (e.g. "Lò Thị Mai", "Sầm Thị Hoa"). If not found, return null.
-2. "summary": A short, simple summary WITHOUT complex medical jargon so the patient can easily understand. Replace hard medical terms with simple explanations.
+2. "summary": A short, simple summary in English WITHOUT complex medical jargon so the patient can easily understand. Replace hard medical terms with simple explanations.
 3. "urgency": "GREEN", "YELLOW", or "RED".
    - RED: Critical danger signs (fever, rash, water breaking, severe headache, heavy bleeding).
    - YELLOW: Requires attention (antibiotics affecting fetus, checkup schedules).
    - GREEN: Routine wellness or minor issues.
 4. "confidence": A score from 0 to 100 based on text clarity.
 5. "health_checklist": An array of objects. Each object represents ONE health indicator extracted from the document with the following fields:
-   - "label": Name of the indicator (e.g., "Huyết áp", "Tim thai", "Cân nặng", "Nước ối", "Đường huyết", "Protein niệu", "Tuổi thai", "Triệu chứng").
+   - "label": Name of the indicator in English (e.g., "Blood Pressure", "Fetal Heart Rate", "Weight", "Amniotic Fluid", "Blood Glucose", "Urine Protein", "Gestational Age", "Symptoms").
    - "value": The actual measured value or description from the document.
    - "tag": "GREEN" (normal/safe), "YELLOW" (needs monitoring/midwife review), or "RED" (dangerous/needs doctor).
-   - "note": A brief clinical note explaining why this tag was assigned. Use simple Vietnamese.
+   - "note": A brief clinical note in English explaining why this tag was assigned. Use simple English.
    Extract ALL indicators you can find in the document. Include at least 4-6 items.
-6. "checklist": An array of actionable health suggestions.
-   - IF RED: Provide ONLY emergency first-aid instructions. ABSOLUTELY NO OTHER INSTRUCTIONS.
-   - IF YELLOW: Provide a checklist for the midwife to review (e.g., antibiotic safety, schedule).
-   - IF GREEN: Provide simple wellness tips.
-7. "warning_box": If RED, a short warning message. Else null.
+6. "checklist": An array of actionable health suggestions in English.
+   - IF RED: Provide ONLY emergency first-aid instructions in English. ABSOLUTELY NO OTHER INSTRUCTIONS.
+   - IF YELLOW: Provide a checklist in English for the midwife to review (e.g., antibiotic safety, schedule).
+   - IF GREEN: Provide simple wellness tips in English.
+7. "warning_box": If RED, a short warning message in English. Else null.
 8. "tay_translation": A SINGLE STRING containing the translated summary into the Tày ethnic language. DO NOT return a nested object.
 Return ONLY valid JSON without any markdown formatting.
   `;

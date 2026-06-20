@@ -14,9 +14,9 @@ const upload = multer({ dest: "uploads/" });
 
 // In-memory user database
 let mockUsers = [
-  { username: "nuhoisinh", password: "123", role: "MIDWIFE", patientName: "Nữ Hộ Sinh Mai" },
-  { username: "bacsi", password: "123", role: "DOCTOR", patientName: "Bác Sĩ Nguyễn" },
-  { username: "congdong", password: "123", role: "COMMUNITY_WORKER", patientName: "NV Cộng Đồng Hà" }
+  { username: "nuhoisinh", password: "123", role: "MIDWIFE", patientName: "Midwife Mai" },
+  { username: "bacsi", password: "123", role: "DOCTOR", patientName: "Doctor Nguyen" },
+  { username: "congdong", password: "123", role: "COMMUNITY_WORKER", patientName: "Community Worker Ha" }
 ];
 
 app.get("/health", (req, res) => {
@@ -27,12 +27,12 @@ app.get("/health", (req, res) => {
 app.post("/api/auth/register", (req, res) => {
   const { username, password, patientName, phone_number, location, latitude, longitude } = req.body;
   if (!username || !password || !patientName || !phone_number) {
-    return res.status(400).json({ error: "Vui lòng điền đầy đủ thông tin bắt buộc" });
+    return res.status(400).json({ error: "Please fill in all required fields" });
   }
 
   const existing = mockUsers.find(u => u.username === username.toLowerCase().trim());
   if (existing) {
-    return res.status(400).json({ error: "Tên đăng nhập hoặc Số điện thoại đã được đăng ký" });
+    return res.status(400).json({ error: "Username or phone number is already registered" });
   }
 
   const newUser = {
@@ -41,7 +41,7 @@ app.post("/api/auth/register", (req, res) => {
     role: "PATIENT",
     patientName,
     phone_number,
-    location: location || "Chưa xác định",
+    location: location || "Unknown",
     latitude: parseFloat(latitude) || 22.415,
     longitude: parseFloat(longitude) || 105.625
   };
@@ -53,7 +53,7 @@ app.post("/api/auth/register", (req, res) => {
 app.post("/api/auth/login", (req, res) => {
   const { username, password } = req.body;
   if (!username) {
-    return res.status(400).json({ error: "Tên đăng nhập không được để trống" });
+    return res.status(400).json({ error: "Username cannot be empty" });
   }
 
   const u = username.toLowerCase().trim();
@@ -81,16 +81,16 @@ app.post("/api/auth/login", (req, res) => {
       user: {
         username: "benhnhan",
         role: "PATIENT",
-        patientName: "Bệnh nhân Demo",
+        patientName: "Demo Patient",
         phone_number: "0900000000",
-        location: "Xã Quảng Khê, Ba Bể",
+        location: "Quang Khe Commune, Ba Be",
         latitude: 22.410,
         longitude: 105.610
       }
     });
   }
 
-  res.status(401).json({ error: "Tên đăng nhập hoặc mật khẩu không chính xác." });
+  res.status(401).json({ error: "Incorrect username or password." });
 });
 
 const documentRoutes = require("./routes/documentRoutes");

@@ -97,11 +97,11 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
         setSelectedCase(data.case);
         setIsEditing(false);
       } else {
-        alert("Lỗi khi lưu thay đổi");
+        alert("Error saving changes");
       }
     } catch (e) {
       console.error(e);
-      alert("Lỗi kết nối khi lưu thay đổi");
+      alert("Connection error when saving changes");
     }
   };
 
@@ -151,13 +151,13 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
   const greenCount = queue.filter(q => q.urgency === 'GREEN').length;
 
   const getWeeklyData = () => {
-    const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const result = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dayLabel = daysOfWeek[d.getDay()];
-      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      const dateStr = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
       
       const casesInDay = queue.filter(q => {
         const qDate = new Date(q.created_at);
@@ -179,7 +179,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      const dateStr = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
       
       const casesInDay = queue.filter(q => {
         const qDate = new Date(q.created_at);
@@ -238,8 +238,8 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
               <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="Profile" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-bold text-gray-800">{role === "DOCTOR" ? "Bác Sĩ Nguyễn" : "Nữ hộ sinh Mai"}</p>
-              <p className="text-xs text-gray-500">{role === "DOCTOR" ? "Trưởng Khoa" : "Senior Midwife"}</p>
+              <p className="text-sm font-bold text-gray-800">{role === "DOCTOR" ? "Dr. Nguyen" : "Midwife Mai"}</p>
+              <p className="text-xs text-gray-500">{role === "DOCTOR" ? "Department Head" : "Senior Midwife"}</p>
             </div>
           </div>
         </div>
@@ -253,7 +253,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             <h2 className="text-3xl font-black text-gray-900 tracking-tight">
               {activeTab === 'Dashboard' ? 'Overall Analytics' : activeTab === 'Records' ? 'Patient History' : 'Worker Dashboard'}
             </h2>
-            <p className="text-gray-500 mt-1">Good morning, {role === "DOCTOR" ? "Bác Sĩ" : "Nữ Hộ Sinh"}. You have <strong className="text-[#8B1E32]">{filteredQueue.filter(q => q.status !== 'COMPLETED').length} cases</strong> requiring your review.</p>
+            <p className="text-gray-500 mt-1">Good morning, {role === "DOCTOR" ? "Doctor" : "Midwife"}. You have <strong className="text-[#8B1E32]">{filteredQueue.filter(q => q.status !== 'COMPLETED').length} cases</strong> requiring your review.</p>
           </div>
           <div className="flex items-center space-x-4">
             <button className="p-2.5 bg-white border border-gray-200 rounded-full text-gray-400 hover:text-gray-600 shadow-sm transition-colors relative">
@@ -335,18 +335,18 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
               {/* Pie Chart */}
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                  <PieChartIcon className="w-5 h-5 text-[#8B1E32]" /> Phân bố mức độ khẩn cấp
+                  <PieChartIcon className="w-5 h-5 text-[#8B1E32]" /> Urgency Level Distribution
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">Tổng ca theo mức RED / YELLOW / GREEN</p>
+                <p className="text-xs text-gray-500 mb-4">Total cases by RED / YELLOW / GREEN levels</p>
                 <UrgencyPieChart redCount={redCount} yellowCount={yellowCount} greenCount={greenCount} />
               </div>
 
               {/* Bar Chart */}
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-[#8B1E32]" /> Ca xử lý theo ngày
+                  <BarChart3 className="w-5 h-5 text-[#8B1E32]" /> Processed Cases by Day
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">Số ca tiếp nhận và hoàn tất trong tuần</p>
+                <p className="text-xs text-gray-500 mb-4">Number of cases received and completed this week</p>
                 <WeeklyBarChart data={getWeeklyData()} />
               </div>
             </div>
@@ -354,9 +354,9 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             {/* Trend Area Chart */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
               <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#8B1E32]" /> Xu hướng ca bệnh 7 ngày
+                <TrendingUp className="w-5 h-5 text-[#8B1E32]" /> 7-Day Case Trend
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Biến động số ca Đỏ, Vàng, Xanh theo thời gian</p>
+              <p className="text-xs text-gray-500 mb-4">Fluctuation of Red, Yellow, Green cases over time</p>
               <TrendAreaChart data={getTrendData()} />
             </div>
 
@@ -464,7 +464,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             {!selectedCase ? (
               <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
                 <FileText className="w-16 h-16 mb-4 opacity-50" />
-                <p className="text-lg font-medium">{loading ? "Đang tải dữ liệu..." : "Chưa có hồ sơ nào cần duyệt"}</p>
+                <p className="text-lg font-medium">{loading ? "Loading data..." : "No records to approve"}</p>
               </div>
             ) : (
               <>
@@ -485,7 +485,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
                     <HealthChecklist
                       checklist={selectedCase.health_checklist}
                       patientName={selectedCase.patientName}
-                      date={new Date(selectedCase.created_at).toLocaleDateString('vi-VN')}
+                      date={new Date(selectedCase.created_at).toLocaleDateString('en-US')}
                       overallUrgency={selectedCase.urgency}
                     />
                   )}
@@ -551,26 +551,26 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
                         </div>
                         {(isEditing || editForm.suggestion_for_doctor) && (
                           <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-1">Gợi ý cho Bác sĩ (Escalate)</label>
+                            <label className="block text-sm font-medium text-gray-600 mb-1">Suggestion for Doctor (Escalate)</label>
                             <textarea 
                               value={editForm.suggestion_for_doctor} 
                               onChange={(e) => setEditForm({...editForm, suggestion_for_doctor: e.target.value})}
                               readOnly={!isEditing}
                               rows={3} 
-                              placeholder="Nhập ghi chú hoặc gợi ý cho bác sĩ (nếu cần chuyển viện/chuyển ca)..."
+                              placeholder="Enter notes or suggestions for the doctor (if referral or case transfer is needed)..."
                               className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-rose-500 bg-white shadow-inner focus:ring-2 focus:ring-rose-500/20' : 'border border-gray-200 bg-gray-50'}`} 
                             />
                           </div>
                         )}
                         {(isEditing || editForm.instruction_for_patient) && (
                           <div>
-                            <label className="block text-sm font-medium text-gray-600 mb-1">Hướng dẫn cho Bệnh nhân</label>
+                            <label className="block text-sm font-medium text-gray-600 mb-1">Instructions for Patient</label>
                             <textarea 
                               value={editForm.instruction_for_patient} 
                               onChange={(e) => setEditForm({...editForm, instruction_for_patient: e.target.value})}
                               readOnly={!isEditing}
                               rows={3} 
-                              placeholder="Nhập hướng dẫn, dặn dò uống thuốc, lịch tái khám cho bệnh nhân..."
+                              placeholder="Enter instructions, medication details, or follow-up schedule for the patient..."
                               className={`w-full rounded-lg p-2.5 outline-none transition-colors ${isEditing ? 'border-2 border-emerald-500 bg-white shadow-inner focus:ring-2 focus:ring-emerald-500/20' : 'border border-gray-200 bg-gray-50'}`} 
                             />
                           </div>

@@ -7,106 +7,106 @@ import { API_BASE_URL } from "../config";
 // =================== MOCK DATA ===================
 
 const mockReports = [
-  { id: 1, patientName: "Nông Thị Hương", phone: "0912345678", location: "Bản Khuôi, Bắc Kạn", type: "Khẩn cấp", status: "NEW", summary: "Sản phụ 38 tuần, vỡ ối, đau bụng dữ dội. Cần xe cấp cứu ngay.", urgency: "RED", created_at: new Date(Date.now() - 10 * 60000) },
-  { id: 2, patientName: "Hoàng Văn Tùng", phone: "0987654321", location: "Thôn Nà Phặc, Ngân Sơn", type: "Theo dõi", status: "IN_PROGRESS", summary: "Bệnh nhân tiểu đường thai kỳ, cần theo dõi đường huyết hàng tuần.", urgency: "YELLOW", created_at: new Date(Date.now() - 2 * 3600000) },
-  { id: 3, patientName: "Triệu Thị Lan", phone: "0934567890", location: "Xã Bằng Phúc, Chợ Đồn", type: "Thông thường", status: "TRANSFERRED", summary: "Khám thai định kỳ 28 tuần, các chỉ số bình thường. Đã chuyển nữ hộ sinh.", urgency: "GREEN", created_at: new Date(Date.now() - 5 * 3600000) },
-  { id: 4, patientName: "Ma Thị Xuân", phone: "0945678901", location: "Bản Thi, Ba Bể", type: "Khẩn cấp", status: "COMPLETED", summary: "Sản phụ 36 tuần, huyết áp cao 160/100. Đã chuyển viện thành công.", urgency: "RED", created_at: new Date(Date.now() - 8 * 3600000) },
-  { id: 5, patientName: "Lý Văn Đức", phone: "0956789012", location: "Xã Quảng Khê, Ba Bể", type: "Theo dõi", status: "NEW", summary: "Thai phụ 32 tuần, thiếu máu (Hb: 9.5g/dL), cần bổ sung sắt và theo dõi.", urgency: "YELLOW", created_at: new Date(Date.now() - 30 * 60000) },
+  { id: 1, patientName: "Nong Thi Huong", phone: "0912345678", location: "Ban Khuoi, Bac Kan", type: "Urgent", status: "NEW", summary: "Pregnant woman at 38 weeks, water broke, severe abdominal pain. Needs ambulance immediately.", urgency: "RED", created_at: new Date(Date.now() - 10 * 60000) },
+  { id: 2, patientName: "Hoang Van Tung", phone: "0987654321", location: "Na Phac Hamlet, Ngan Son", type: "Monitoring", status: "IN_PROGRESS", summary: "Patient with gestational diabetes, needs weekly blood sugar monitoring.", urgency: "YELLOW", created_at: new Date(Date.now() - 2 * 3600000) },
+  { id: 3, patientName: "Trieu Thi Lan", phone: "0934567890", location: "Bang Phuc Commune, Cho Don", type: "Normal", status: "TRANSFERRED", summary: "Routine 28-week pregnancy checkup, all indicators normal. Referred to midwife.", urgency: "GREEN", created_at: new Date(Date.now() - 5 * 3600000) },
+  { id: 4, patientName: "Ma Thị Xuan", phone: "0945678901", location: "Ban Thi, Ba Be", type: "Urgent", status: "COMPLETED", summary: "Pregnant woman at 36 weeks, high blood pressure 160/100. Successfully hospitalized.", urgency: "RED", created_at: new Date(Date.now() - 8 * 3600000) },
+  { id: 5, patientName: "Ly Van Duc", phone: "0956789012", location: "Quang Khe Commune, Ba Be", type: "Monitoring", status: "NEW", summary: "Pregnant woman at 32 weeks, anemia (Hb: 9.5g/dL), needs iron supplements and monitoring.", urgency: "YELLOW", created_at: new Date(Date.now() - 30 * 60000) },
 ];
 
 const mockAmbulances = [
-  { id: "XC-01", plate: "98A-12345", driver: "Hoàng Văn Long", status: "AVAILABLE", location: "Trạm Y tế Bằng Phúc", latitude: 22.385, longitude: 105.590, lastUpdate: "5 phút trước", fuel: 85 },
-  { id: "XC-02", plate: "98A-67890", driver: "Nông Văn Hải", status: "EN_ROUTE", location: "Đang đến Bản Khuôi", latitude: 22.425, longitude: 105.635, lastUpdate: "2 phút trước", destination: "Bản Khuôi → BV Huyện Ngân Sơn", fuel: 62, eta: "~25 phút" },
-  { id: "XC-03", plate: "98A-11223", driver: "Triệu Văn Bảo", status: "MAINTENANCE", location: "Gara BV Huyện", latitude: 22.408, longitude: 105.624, lastUpdate: "1 giờ trước", fuel: 30 },
+  { id: "XC-01", plate: "98A-12345", driver: "Hoang Van Long", status: "AVAILABLE", location: "Bang Phuc Health Station", latitude: 22.385, longitude: 105.590, lastUpdate: "5 mins ago", fuel: 85 },
+  { id: "XC-02", plate: "98A-67890", driver: "Nong Van Hai", status: "EN_ROUTE", location: "En route to Ban Khuoi", latitude: 22.425, longitude: 105.635, lastUpdate: "2 mins ago", destination: "Ban Khuoi → Ngan Son District Hospital", fuel: 62, eta: "~25 mins" },
+  { id: "XC-03", plate: "98A-11223", driver: "Trieu Van Bao", status: "MAINTENANCE", location: "District Hospital Garage", latitude: 22.408, longitude: 105.624, lastUpdate: "1 hour ago", fuel: 30 },
 ];
 
 const mockFacilities = [
-  { id: 1, name: "Trạm Y tế xã Bằng Phúc", type: "Trạm Y tế", status: "ONLINE", staff: 4, beds: 6, occupiedBeds: 2, equipment: ["Máy siêu âm", "Máy đo huyết áp", "Bộ đỡ đẻ"], lastCheck: "19/06/2026", latitude: 22.385, longitude: 105.590 },
-  { id: 2, name: "Phòng khám khu vực Nà Phặc", type: "Phòng khám", status: "ONLINE", staff: 6, beds: 10, occupiedBeds: 8, equipment: ["Máy siêu âm", "Máy XN máu", "Máy CTG"], lastCheck: "18/06/2026", latitude: 22.450, longitude: 105.650 },
-  { id: 3, name: "Trạm Y tế xã Quảng Khê", type: "Trạm Y tế", status: "ONLINE", staff: 2, beds: 4, occupiedBeds: 1, equipment: ["Máy đo huyết áp", "Bộ đỡ đẻ"], lastCheck: "15/06/2026", latitude: 22.410, longitude: 105.610 },
-  { id: 4, name: "BV Đa khoa huyện Ba Bể", type: "Bệnh viện", status: "ONLINE", staff: 45, beds: 80, occupiedBeds: 72, equipment: ["Máy siêu âm 4D", "Phòng mổ", "Phòng ICU", "Máy CTG", "Xét nghiệm đầy đủ"], lastCheck: "19/06/2026", latitude: 22.408, longitude: 105.624 },
-  { id: 5, name: "Trạm Y tế xã Bản Thi", type: "Trạm Y tế", status: "ONLINE", staff: 3, beds: 5, occupiedBeds: 2, equipment: ["Máy đo huyết áp", "Bộ đỡ đẻ", "Máy siêu âm (đang sửa)"], lastCheck: "17/06/2026", latitude: 22.390, longitude: 105.580 },
+  { id: 1, name: "Bang Phuc Commune Health Station", type: "Health Station", status: "ONLINE", staff: 4, beds: 6, occupiedBeds: 2, equipment: ["Ultrasound Machine", "Sphygmomanometer", "Delivery Kit"], lastCheck: "19/06/2026", latitude: 22.385, longitude: 105.590 },
+  { id: 2, name: "Na Phac Regional Clinic", type: "Clinic", status: "ONLINE", staff: 6, beds: 10, occupiedBeds: 8, equipment: ["Ultrasound Machine", "Blood Analyzer", "CTG Machine"], lastCheck: "18/06/2026", latitude: 22.450, longitude: 105.650 },
+  { id: 3, name: "Quang Khe Commune Health Station", type: "Health Station", status: "ONLINE", staff: 2, beds: 4, occupiedBeds: 1, equipment: ["Sphygmomanometer", "Delivery Kit"], lastCheck: "15/06/2026", latitude: 22.410, longitude: 105.610 },
+  { id: 4, name: "Ba Be District General Hospital", type: "Hospital", status: "ONLINE", staff: 45, beds: 80, occupiedBeds: 72, equipment: ["4D Ultrasound", "Operating Room", "ICU Room", "CTG Machine", "Full Lab Tests"], lastCheck: "19/06/2026", latitude: 22.408, longitude: 105.624 },
+  { id: 5, name: "Ban Thi Commune Health Station", type: "Health Station", status: "ONLINE", staff: 3, beds: 5, occupiedBeds: 2, equipment: ["Sphygmomanometer", "Delivery Kit", "Ultrasound (under repair)"], lastCheck: "17/06/2026", latitude: 22.390, longitude: 105.580 },
 ];
 
 const reportAnalytics = {
   statusPie: [
-    { name: "Khẩn cấp", value: 12, color: "#991B1B" },
-    { name: "Theo dõi", value: 28, color: "#D97706" },
-    { name: "Thông thường", value: 45, color: "#059669" },
+    { name: "Urgent", value: 12, color: "#991B1B" },
+    { name: "Monitoring", value: 28, color: "#D97706" },
+    { name: "Normal", value: 45, color: "#059669" },
   ],
   weeklyData: [
-    { day: "T2", cases: 8, completed: 6 },
-    { day: "T3", cases: 12, completed: 10 },
-    { day: "T4", cases: 6, completed: 5 },
-    { day: "T5", cases: 15, completed: 13 },
-    { day: "T6", cases: 10, completed: 9 },
-    { day: "T7", cases: 7, completed: 6 },
-    { day: "CN", cases: 3, completed: 3 },
+    { day: "Mon", cases: 8, completed: 6 },
+    { day: "Tue", cases: 12, completed: 10 },
+    { day: "Wed", cases: 6, completed: 5 },
+    { day: "Thu", cases: 15, completed: 13 },
+    { day: "Fri", cases: 10, completed: 9 },
+    { day: "Sat", cases: 7, completed: 6 },
+    { day: "Sun", cases: 3, completed: 3 },
   ],
 };
 
 // =================== STATUS HELPERS ===================
 
 const reportStatusMap = {
-  NEW: { label: "Mới", bg: "bg-blue-100", text: "text-blue-800", dot: "bg-blue-500" },
-  IN_PROGRESS: { label: "Đang xử lý", bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
-  TRANSFERRED: { label: "Đã chuyển", bg: "bg-purple-100", text: "text-purple-800", dot: "bg-purple-500" },
-  COMPLETED: { label: "Hoàn tất", bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" },
-  WAITING_DOCTOR: { label: "Chờ Bác sĩ", bg: "bg-red-100", text: "text-red-800", dot: "bg-red-500" },
-  WAITING_MIDWIFE: { label: "Chờ Hộ sinh", bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
+  NEW: { label: "New", bg: "bg-blue-100", text: "text-blue-800", dot: "bg-blue-500" },
+  IN_PROGRESS: { label: "Processing", bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
+  TRANSFERRED: { label: "Transferred", bg: "bg-purple-100", text: "text-purple-800", dot: "bg-purple-500" },
+  COMPLETED: { label: "Completed", bg: "bg-emerald-100", text: "text-emerald-800", dot: "bg-emerald-500" },
+  WAITING_DOCTOR: { label: "Waiting for Doctor", bg: "bg-red-100", text: "text-red-800", dot: "bg-red-500" },
+  WAITING_MIDWIFE: { label: "Waiting for Midwife", bg: "bg-amber-100", text: "text-amber-800", dot: "bg-amber-500" },
 };
 
 const ambulanceStatusMap = {
-  AVAILABLE: { label: "Sẵn sàng", bg: "bg-emerald-100", text: "text-emerald-800", icon: CheckCircle },
-  EN_ROUTE: { label: "Đang vận chuyển", bg: "bg-blue-100", text: "text-blue-800", icon: Truck },
-  MAINTENANCE: { label: "Bảo trì", bg: "bg-gray-100", text: "text-gray-600", icon: Wrench },
+  AVAILABLE: { label: "Available", bg: "bg-emerald-100", text: "text-emerald-800", icon: CheckCircle },
+  EN_ROUTE: { label: "En Route", bg: "bg-blue-100", text: "text-blue-800", icon: Truck },
+  MAINTENANCE: { label: "Maintenance", bg: "bg-gray-100", text: "text-gray-600", icon: Wrench },
 };
 
 const facilityStatusMap = {
-  ONLINE: { label: "Đang hoạt động", bg: "bg-emerald-100", text: "text-emerald-800", icon: CheckCircle },
-  OFFLINE: { label: "Ngưng hoạt động", bg: "bg-red-100", text: "text-red-800", icon: WifiOff },
-  MAINTENANCE: { label: "Đang bảo trì", bg: "bg-amber-100", text: "text-amber-800", icon: Wrench },
+  ONLINE: { label: "Active", bg: "bg-emerald-100", text: "text-emerald-800", icon: CheckCircle },
+  OFFLINE: { label: "Inactive", bg: "bg-red-100", text: "text-red-800", icon: WifiOff },
+  MAINTENANCE: { label: "Maintenance", bg: "bg-amber-100", text: "text-amber-800", icon: Wrench },
 };
 
 // =================== GEOGRAPHIC GRAPH & ROUTING ===================
 
 const mapGraph = {
-  "Trạm Y tế xã Bản Thi": { "Trạm Y tế xã Bằng Phúc": 3, "Trạm Y tế xã Quảng Khê": 4 },
-  "Trạm Y tế xã Bằng Phúc": { "Trạm Y tế xã Bản Thi": 3, "BV Đa khoa huyện Ba Bể": 5 },
-  "Trạm Y tế xã Quảng Khê": { "Trạm Y tế xã Bản Thi": 4, "BV Đa khoa huyện Ba Bể": 2 },
-  "BV Đa khoa huyện Ba Bể": { "Trạm Y tế xã Bằng Phúc": 5, "Trạm Y tế xã Quảng Khê": 2, "Bản Khuôi": 3, "Phòng khám khu vực Nà Phặc": 10 },
-  "Bản Khuôi": { "BV Đa khoa huyện Ba Bể": 3 },
-  "Phòng khám khu vực Nà Phặc": { "BV Đa khoa huyện Ba Bể": 10 }
+  "Ban Thi Commune Health Station": { "Bang Phuc Commune Health Station": 3, "Quang Khe Commune Health Station": 4 },
+  "Bang Phuc Commune Health Station": { "Ban Thi Commune Health Station": 3, "Ba Be District General Hospital": 5 },
+  "Quang Khe Commune Health Station": { "Ban Thi Commune Health Station": 4, "Ba Be District General Hospital": 2 },
+  "Ba Be District General Hospital": { "Bang Phuc Commune Health Station": 5, "Quang Khe Commune Health Station": 2, "Ban Khuoi": 3, "Na Phac Regional Clinic": 10 },
+  "Ban Khuoi": { "Ba Be District General Hospital": 3 },
+  "Na Phac Regional Clinic": { "Ba Be District General Hospital": 10 }
 };
 
 const mapNodes = {
-  "Trạm Y tế xã Bản Thi": { name: "TYT Bản Thi", x: 60, y: 330, type: "facility" },
-  "Trạm Y tế xã Bằng Phúc": { name: "TYT Bằng Phúc", x: 130, y: 360, type: "facility" },
-  "Trạm Y tế xã Quảng Khê": { name: "TYT Quảng Khê", x: 260, y: 240, type: "facility" },
-  "BV Đa khoa huyện Ba Bể": { name: "BV Đa khoa Ba Bể", x: 360, y: 250, type: "hospital" },
-  "Bản Khuôi": { name: "Bản Khuôi", x: 440, y: 175, type: "patient" },
-  "Phòng khám khu vực Nà Phặc": { name: "PK Nà Phặc", x: 540, y: 60, type: "facility" }
+  "Ban Thi Commune Health Station": { name: "Ban Thi Health Station", x: 60, y: 330, type: "facility" },
+  "Bang Phuc Commune Health Station": { name: "Bang Phuc Health Station", x: 130, y: 360, type: "facility" },
+  "Quang Khe Commune Health Station": { name: "Quang Khe Health Station", x: 260, y: 240, type: "facility" },
+  "Ba Be District General Hospital": { name: "Ba Be Hospital", x: 360, y: 250, type: "hospital" },
+  "Ban Khuoi": { name: "Ban Khuoi", x: 440, y: 175, type: "patient" },
+  "Na Phac Regional Clinic": { name: "Na Phac Clinic", x: 540, y: 60, type: "facility" }
 };
 
 const getClosestNode = (locationName) => {
-  if (!locationName) return "BV Đa khoa huyện Ba Bể";
+  if (!locationName) return "Ba Be District General Hospital";
   const name = locationName.toLowerCase();
-  if (name.includes("khuôi") || name.includes("khuoi")) return "Bản Khuôi";
-  if (name.includes("thi")) return "Trạm Y tế xã Bản Thi";
-  if (name.includes("quảng khê") || name.includes("quang khe")) return "Trạm Y tế xã Quảng Khê";
-  if (name.includes("bằng phúc") || name.includes("bang phuc")) return "Trạm Y tế xã Bằng Phúc";
-  if (name.includes("nà phặc") || name.includes("na phac")) return "Phòng khám khu vực Nà Phặc";
-  return "BV Đa khoa huyện Ba Bể";
+  if (name.includes("khuôi") || name.includes("khuoi")) return "Ban Khuoi";
+  if (name.includes("thi")) return "Ban Thi Commune Health Station";
+  if (name.includes("quảng khê") || name.includes("quang khe")) return "Quang Khe Commune Health Station";
+  if (name.includes("bằng phúc") || name.includes("bang phuc")) return "Bang Phuc Commune Health Station";
+  if (name.includes("nà phặc") || name.includes("na phac")) return "Na Phac Regional Clinic";
+  return "Ba Be District General Hospital";
 };
 
 const getAmbulanceClosestNode = (amb) => {
   const loc = amb.location.toLowerCase();
-  if (loc.includes("bằng phúc") || loc.includes("bang phuc")) return "Trạm Y tế xã Bằng Phúc";
-  if (loc.includes("quảng khê") || loc.includes("quang khe")) return "Trạm Y tế xã Quảng Khê";
-  if (loc.includes("thi")) return "Trạm Y tế xã Bản Thi";
-  if (loc.includes("nà phặc") || loc.includes("na phac")) return "Phòng khám khu vực Nà Phặc";
-  if (loc.includes("khuôi") || loc.includes("khuoi")) return "Bản Khuôi";
-  return "BV Đa khoa huyện Ba Bể";
+  if (loc.includes("bằng phúc") || loc.includes("bang phuc")) return "Bang Phuc Commune Health Station";
+  if (loc.includes("quảng khê") || loc.includes("quang khe")) return "Quang Khe Commune Health Station";
+  if (loc.includes("thi")) return "Ban Thi Commune Health Station";
+  if (loc.includes("nà phặc") || loc.includes("na phac")) return "Na Phac Regional Clinic";
+  if (loc.includes("khuôi") || loc.includes("khuoi")) return "Ban Khuoi";
+  return "Ba Be District General Hospital";
 };
 
 function findShortestPath(graph, start, end) {
@@ -182,13 +182,13 @@ export default function CommunityWorkerDashboard() {
         const total = fac.beds || 1;
         const occupancyRate = Math.round((occupied / total) * 100);
         
-        let loadLabel = "Vắng";
+        let loadLabel = "Low";
         let loadColor = "text-emerald-600";
         if (occupancyRate >= 80) {
-          loadLabel = "Đông";
+          loadLabel = "High";
           loadColor = "text-red-600";
         } else if (occupancyRate >= 50) {
-          loadLabel = "Bình thường";
+          loadLabel = "Normal";
           loadColor = "text-amber-600";
         }
         
@@ -196,27 +196,27 @@ export default function CommunityWorkerDashboard() {
         let matchText = "";
         let matchBadgeColor = "";
         
-        const isHospital = fac.type === "Bệnh viện";
-        const hasICUOrSurgery = fac.equipment.some(e => e.includes("ICU") || e.includes("mổ"));
+        const isHospital = fac.type === "Hospital";
+        const hasICUOrSurgery = fac.equipment.some(e => e.includes("ICU") || e.includes("surgery") || e.includes("operating") || e.includes("mổ"));
         
         if (report.urgency === "RED") {
           if (hasICUOrSurgery || isHospital) {
             matchScore += 50;
-            matchText = "Rất phù hợp — Tuyến đầu có phòng ICU, mổ đẻ và hồi sức cấp cứu.";
+            matchText = "Highly suitable — Frontline facility with ICU, operating room, and resuscitation equipment.";
             matchBadgeColor = "bg-emerald-50 text-emerald-800 border-emerald-200";
           } else {
             matchScore -= 50;
-            matchText = "Hạn chế — Cơ sở cấp dưới không đủ thiết bị hồi sức và phẫu thuật đẻ.";
+            matchText = "Limited — Lower-level facility lacks resuscitation and surgical delivery equipment.";
             matchBadgeColor = "bg-red-50 text-red-800 border-red-200";
           }
         } else {
           if (!isHospital) {
             matchScore += 30;
-            matchText = "Phù hợp — Tuyến cơ sở, giúp giảm tải áp lực cho bệnh viện tuyến trên.";
+            matchText = "Suitable — Primary care level, helps reduce pressure on higher-level hospitals.";
             matchBadgeColor = "bg-emerald-50 text-[#0f766e] border-[#0f766e]/20";
           } else {
             matchScore += 0;
-            matchText = "Bình thường — Bệnh viện tuyến trên (khuyến khích giữ giường cho ca cấp cứu).";
+            matchText = "Normal — Higher-level hospital (recommended to reserve beds for emergency cases).";
             matchBadgeColor = "bg-amber-50 text-amber-800 border-amber-200";
           }
         }
@@ -270,16 +270,16 @@ export default function CommunityWorkerDashboard() {
     setAmbulances(prev => prev.map(a => a.id === selectedAmbulanceId ? {
       ...a,
       status: "EN_ROUTE",
-      location: `Đang di chuyển đến ${report.location}`,
+      location: `En route to ${report.location}`,
       destination: `${report.location} → ${hosp.name}`,
       destinationHospital: hosp.name,
-      eta: `~${Math.round(totalDistance * 2 + 5)} phút`
+      eta: `~${Math.round(totalDistance * 2 + 5)} mins`
     } : a));
     
     await handleUpdateReportStatus(report.id, "IN_PROGRESS", true);
     
     setDispatchModalOpen(false);
-    showToast(`🚑 Đã điều động xe ${amb.id} vận chuyển sản phụ ${report.patientName} đến ${hosp.name}. Tổng quãng đường điều phối: ${totalDistance.toFixed(1)} km.`, "success");
+    showToast(`🚑 Dispatched ambulance ${amb.id} to transport patient ${report.patientName} to ${hosp.name}. Total dispatch distance: ${totalDistance.toFixed(1)} km.`, "success");
   };
 
   const getStatusPieData = () => {
@@ -288,21 +288,21 @@ export default function CommunityWorkerDashboard() {
     const green = reports.filter(r => r.urgency === 'GREEN').length;
     
     const data = [
-      { name: "Khẩn cấp", value: red, color: "#991B1B" },
-      { name: "Theo dõi", value: yellow, color: "#D97706" },
-      { name: "Thông thường", value: green, color: "#059669" },
+      { name: "Urgent", value: red, color: "#991B1B" },
+      { name: "Monitoring", value: yellow, color: "#D97706" },
+      { name: "Normal", value: green, color: "#059669" },
     ].filter(d => d.value > 0);
-    return data.length > 0 ? data : [{ name: "Chưa có dữ liệu", value: 1, color: "#D1D5DB" }];
+    return data.length > 0 ? data : [{ name: "No data", value: 1, color: "#D1D5DB" }];
   };
 
   const getWeeklyData = () => {
-    const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const result = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dayLabel = daysOfWeek[d.getDay()];
-      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      const dateStr = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
       
       const casesInDay = reports.filter(q => {
         const qDate = new Date(q.created_at);
@@ -324,7 +324,7 @@ export default function CommunityWorkerDashboard() {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      const dateStr = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
       
       const casesInDay = reports.filter(q => {
         const qDate = new Date(q.created_at);
@@ -363,7 +363,7 @@ export default function CommunityWorkerDashboard() {
     
     const ambNode = getAmbulanceClosestNode(amb);
     
-    let hospNode = "BV Đa khoa huyện Ba Bể";
+    let hospNode = "Ba Be District General Hospital";
     if (amb.destinationHospital) {
       hospNode = amb.destinationHospital;
     } else if (amb.destination && amb.destination.includes("→")) {
@@ -447,14 +447,14 @@ export default function CommunityWorkerDashboard() {
         const mappedCases = data.cases.map(c => ({
           ...c,
           phone: c.phone_number || c.phone,
-          location: c.location || "Chưa xác định",
+          location: c.location || "Undetermined",
           latitude: parseFloat(c.latitude) || 22.415,
           longitude: parseFloat(c.longitude) || 105.625
         }));
         setReports(mappedCases);
       }
     } catch (err) {
-      console.error("Lỗi fetch reports:", err);
+      console.error("Error fetching reports:", err);
     }
   };
 
@@ -476,7 +476,7 @@ export default function CommunityWorkerDashboard() {
         const updatedMapped = {
           ...data.case,
           phone: data.case.phone_number || data.case.phone,
-          location: data.case.location || "Chưa xác định",
+          location: data.case.location || "Undetermined",
           latitude: parseFloat(data.case.latitude) || 22.415,
           longitude: parseFloat(data.case.longitude) || 105.625
         };
@@ -485,24 +485,24 @@ export default function CommunityWorkerDashboard() {
           setSelectedReport(updatedMapped);
         }
         if (!silent) {
-          showToast(`Cập nhật trạng thái thành công: ${reportStatusMap[newStatus].label}`, "success");
+          showToast(`Status updated successfully: ${reportStatusMap[newStatus].label}`, "success");
         }
       } else {
-        showToast("Lỗi khi cập nhật trạng thái", "error");
+        showToast("Error updating status", "error");
       }
     } catch (err) {
       console.error(err);
-      showToast("Không thể kết nối đến máy chủ", "error");
+      showToast("Could not connect to server", "error");
     }
   };
 
   const handleReportToHospital = async (report) => {
     const nearestHosp = getNearestHospital(report.latitude, report.longitude, facilities);
-    const hospName = nearestHosp ? nearestHosp.name : "Bệnh viện tuyến trên";
-    const distance = nearestHosp ? nearestHosp.distance : "không xác định";
+    const hospName = nearestHosp ? nearestHosp.name : "Higher-level Hospital";
+    const distance = nearestHosp ? nearestHosp.distance : "undetermined";
 
     await handleUpdateReportStatus(report.id, 'TRANSFERRED', true);
-    showToast(`🚨 Đã báo động đỏ & chuyển hồ sơ sản phụ ${report.patientName} đến ${hospName} thành công! Khoảng cách chuyển viện: ${distance} km.`, "error");
+    showToast(`🚨 Red alert activated & patient ${report.patientName} records successfully transferred to ${hospName}! Hospital transfer distance: ${distance} km.`, "error");
   };
 
   const handleDispatchAmbulance = (ambulanceId, report) => {
@@ -518,21 +518,21 @@ export default function CommunityWorkerDashboard() {
       targetReport = reports.find(r => r.status !== 'COMPLETED');
     }
     if (!targetReport) {
-      showToast("⚠️ Không tìm thấy ca bệnh nào cần điều phối xe cấp cứu.", "warning");
+      showToast("⚠️ No cases found requiring ambulance dispatch.", "warning");
       return;
     }
     handleOpenDispatchModal(targetReport, ambulanceId);
   };
 
   const handleReportToHospitalGlobal = () => {
-    showToast("🚑 Đã gửi tín hiệu và yêu cầu xe cấp cứu của BV Huyện Ba Bể hỗ trợ thành công.", "info");
+    showToast("🚑 Signal sent and emergency assistance request to Ba Be District Hospital successfully submitted.", "info");
   };
 
   const tabs = [
     { key: "Dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { key: "Reports", label: "Báo cáo", icon: FileText },
-    { key: "Ambulance", label: "Xe cấp cứu", icon: Ambulance },
-    { key: "Infrastructure", label: "Hạ tầng", icon: Building2 },
+    { key: "Reports", label: "Reports", icon: FileText },
+    { key: "Ambulance", label: "Ambulances", icon: Ambulance },
+    { key: "Infrastructure", label: "Infrastructure", icon: Building2 },
   ];
 
   return (
@@ -544,7 +544,7 @@ export default function CommunityWorkerDashboard() {
         <p className="text-xs text-gray-400 font-medium mb-10 uppercase tracking-wider">Community Worker</p>
 
         <nav className="w-full px-4 space-y-2 flex-1">
-          <p className="text-xs font-bold text-gray-400 mb-4 ml-4 uppercase tracking-wider">Quản lý</p>
+          <p className="text-xs font-bold text-gray-400 mb-4 ml-4 uppercase tracking-wider">Management</p>
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (
@@ -568,10 +568,10 @@ export default function CommunityWorkerDashboard() {
 
         <div className="w-full px-4 mt-auto">
           <div className="flex items-center px-4 py-3 bg-gray-50 rounded-xl border border-gray-200">
-            <div className="w-8 h-8 rounded-full bg-teal-500 mr-3 flex items-center justify-center text-white font-bold text-sm">NV</div>
+            <div className="w-8 h-8 rounded-full bg-teal-500 mr-3 flex items-center justify-center text-white font-bold text-sm">CW</div>
             <div className="text-left">
-              <p className="text-sm font-bold text-gray-800">NV Cộng đồng Hà</p>
-              <p className="text-xs text-gray-500">Huyện Ba Bể, Bắc Kạn</p>
+              <p className="text-sm font-bold text-gray-800">Community Worker Ha</p>
+              <p className="text-xs text-gray-500">Ba Be District, Bac Kan</p>
             </div>
           </div>
         </div>
@@ -583,13 +583,13 @@ export default function CommunityWorkerDashboard() {
         <div className="flex justify-between items-end mb-8 shrink-0">
           <div>
             <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-              {activeTab === 'Dashboard' ? 'Overall Analytics' : activeTab === 'Reports' ? 'Báo cáo Bệnh nhân' : activeTab === 'Ambulance' ? 'Theo dõi Xe cấp cứu' : 'Quản lý Hạ tầng'}
+              {activeTab === 'Dashboard' ? 'Overall Analytics' : activeTab === 'Reports' ? 'Patient Reports' : activeTab === 'Ambulance' ? 'Ambulance Tracking' : 'Infrastructure Management'}
             </h2>
             <p className="text-gray-500 mt-1">
-              {activeTab === 'Dashboard' ? 'Tổng quan hoạt động cộng đồng y tế khu vực' :
-               activeTab === 'Reports' ? `${reports.filter(r => r.status === 'NEW').length} báo cáo mới cần xử lý` :
-               activeTab === 'Ambulance' ? `${ambulances.filter(a => a.status === 'AVAILABLE').length}/${ambulances.length} xe sẵn sàng` :
-               `${facilities.filter(f => f.status === 'ONLINE').length}/${facilities.length} cơ sở đang hoạt động`}
+              {activeTab === 'Dashboard' ? 'Overview of regional community health activities' :
+               activeTab === 'Reports' ? `${reports.filter(r => r.status === 'NEW').length} new reports requiring action` :
+               activeTab === 'Ambulance' ? `${ambulances.filter(a => a.status === 'AVAILABLE').length}/${ambulances.length} ambulances ready` :
+               `${facilities.filter(f => f.status === 'ONLINE').length}/${facilities.length} active facilities`}
             </p>
           </div>
           <button className="p-2.5 bg-white border border-gray-200 rounded-full text-gray-400 hover:text-gray-600 shadow-sm relative">
@@ -606,34 +606,34 @@ export default function CommunityWorkerDashboard() {
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center"><Activity className="w-6 h-6 text-rose-600" /></div>
-                  <span className="text-xs font-bold text-gray-400 uppercase">Tổng báo cáo</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase">Total Reports</span>
                 </div>
                 <h3 className="text-4xl font-extrabold text-gray-900">{reports.length}</h3>
-                <p className="text-sm text-gray-500 mt-1">Tháng này</p>
+                <p className="text-sm text-gray-500 mt-1">This Month</p>
               </div>
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center"><Clock className="w-6 h-6 text-amber-600" /></div>
-                  <span className="text-xs font-bold text-gray-400 uppercase">Đang xử lý</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase">Processing</span>
                 </div>
                 <h3 className="text-4xl font-extrabold text-gray-900">{reports.filter(r => r.status === 'NEW' || r.status === 'IN_PROGRESS').length}</h3>
-                <p className="text-sm text-gray-500 mt-1">Cần attention</p>
+                <p className="text-sm text-gray-500 mt-1">Needs attention</p>
               </div>
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center"><Ambulance className="w-6 h-6 text-emerald-600" /></div>
-                  <span className="text-xs font-bold text-gray-400 uppercase">Xe sẵn sàng</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase">Ambulances Ready</span>
                 </div>
                 <h3 className="text-4xl font-extrabold text-gray-900">{ambulances.filter(a => a.status === 'AVAILABLE').length}</h3>
-                <p className="text-sm text-gray-500 mt-1">/ {ambulances.length} xe tổng</p>
+                <p className="text-sm text-gray-500 mt-1">/ {ambulances.length} total</p>
               </div>
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center"><Building2 className="w-6 h-6 text-blue-600" /></div>
-                  <span className="text-xs font-bold text-gray-400 uppercase">Cơ sở online</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase">Active Facilities</span>
                 </div>
                 <h3 className="text-4xl font-extrabold text-gray-900">{facilities.filter(f => f.status === 'ONLINE').length}</h3>
-                <p className="text-sm text-gray-500 mt-1">/ {facilities.length} cơ sở</p>
+                <p className="text-sm text-gray-500 mt-1">/ {facilities.length} total</p>
               </div>
             </div>
 
@@ -641,16 +641,16 @@ export default function CommunityWorkerDashboard() {
             <div className="grid lg:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                  <PieChartIcon className="w-5 h-5 text-[#8B1E32]" /> Phân bộ báo cáo theo loại
+                  <PieChartIcon className="w-5 h-5 text-[#8B1E32]" /> Report Distribution by Type
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">Tỷ lệ ca khẩn cấp / theo dõi / thông thường</p>
+                <p className="text-xs text-gray-500 mb-4">Ratio of Urgent / Monitoring / Normal cases</p>
                 <StatusPieChart data={getStatusPieData()} />
               </div>
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-[#8B1E32]" /> Báo cáo trong tuần
+                  <BarChart3 className="w-5 h-5 text-[#8B1E32]" /> Weekly Reports
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">Số lượng tiếp nhận và xử lý theo ngày</p>
+                <p className="text-xs text-gray-500 mb-4">Number of reports received and processed by day</p>
                 <WeeklyBarChart data={getWeeklyData()} />
               </div>
             </div>
@@ -658,9 +658,9 @@ export default function CommunityWorkerDashboard() {
             {/* Trend */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
               <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#8B1E32]" /> Xu hướng ca bệnh 7 ngày
+                <TrendingUp className="w-5 h-5 text-[#8B1E32]" /> 7-Day Case Trend
               </h3>
-              <p className="text-xs text-gray-500 mb-4">Biến động ca Đỏ, Vàng, Xanh theo thời gian</p>
+              <p className="text-xs text-gray-500 mb-4">Fluctuation of Red, Yellow, Green cases over time</p>
               <TrendAreaChart data={getTrendData()} />
             </div>
           </motion.div>
@@ -672,7 +672,7 @@ export default function CommunityWorkerDashboard() {
             {/* Report List */}
             <div className="w-2/5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">Danh sách báo cáo</h3>
+                <h3 className="text-lg font-bold text-gray-900">Reports List</h3>
               </div>
               <div className="flex-1 overflow-y-auto pr-2 space-y-3">
                 {reports.map(report => {
@@ -699,7 +699,7 @@ export default function CommunityWorkerDashboard() {
                       <p className="text-sm text-gray-600 line-clamp-2 mb-3">{report.summary}</p>
                       <div className="flex items-center justify-between text-xs text-gray-400">
                         <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{report.location}</span>
-                        <span>{new Date(report.created_at).toLocaleTimeString('vi-VN')}</span>
+                        <span>{new Date(report.created_at).toLocaleTimeString('en-US')}</span>
                       </div>
                     </motion.div>
                   );
@@ -712,44 +712,44 @@ export default function CommunityWorkerDashboard() {
               {!selectedReport ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
                   <FileText className="w-16 h-16 mb-4 opacity-50" />
-                  <p className="text-lg font-medium">Chọn một báo cáo để xem chi tiết</p>
+                  <p className="text-lg font-medium">Select a report to view details</p>
                 </div>
               ) : (
                 <>
                   <div className={`px-6 py-4 text-white ${selectedReport.urgency === 'RED' ? 'bg-[#8B1E32]' : selectedReport.urgency === 'YELLOW' ? 'bg-amber-600' : 'bg-emerald-600'}`}>
                     <div className="flex items-center font-bold text-lg">
                       {selectedReport.urgency === 'RED' && <AlertTriangle className="w-5 h-5 mr-2" />}
-                      Báo cáo: {selectedReport.patientName}
+                      Report: {selectedReport.patientName}
                     </div>
                     <p className="text-white/80 text-sm mt-1">{selectedReport.location} • {selectedReport.type}</p>
                   </div>
                   <div className="flex-1 overflow-y-auto p-6 space-y-4">
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                      <h4 className="text-sm font-bold text-gray-700 mb-2">Nội dung báo cáo</h4>
+                      <h4 className="text-sm font-bold text-gray-700 mb-2">Report Content</h4>
                       <p className="text-gray-600 leading-relaxed">{selectedReport.summary}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <p className="text-xs font-bold text-gray-400 uppercase mb-1">Số điện thoại</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase mb-1">Phone Number</p>
                         <p className="text-gray-900 font-bold flex items-center gap-2"><Phone className="w-4 h-4 text-gray-400" />{selectedReport.phone}</p>
                       </div>
                       <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <p className="text-xs font-bold text-gray-400 uppercase mb-1">Thời gian</p>
-                        <p className="text-gray-900 font-bold">{new Date(selectedReport.created_at).toLocaleString('vi-VN')}</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase mb-1">Time</p>
+                        <p className="text-gray-900 font-bold">{new Date(selectedReport.created_at).toLocaleString('en-US')}</p>
                       </div>
                     </div>
 
                     {/* GPS Routing & Recommendation */}
                     <div className="bg-rose-50/50 p-5 rounded-2xl border border-rose-100/80 space-y-4 text-left">
                       <h4 className="text-sm font-bold text-[#8B1E32] flex items-center gap-2">
-                        <MapPin className="w-4 h-4" /> Định vị GPS & Điều phối khẩn cấp
+                        <MapPin className="w-4 h-4" /> GPS Tracking & Emergency Dispatch
                       </h4>
                       
                       {/* Patient Location Info */}
                       <div className="flex items-center justify-between text-xs bg-white px-4 py-2.5 rounded-xl border border-rose-100 shadow-sm">
-                        <span className="font-semibold text-gray-500 flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-rose-500" /> Tọa độ bệnh nhân:</span>
+                        <span className="font-semibold text-gray-500 flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-rose-500" /> Patient Coordinates:</span>
                         <span className="font-bold text-gray-800">
-                          {selectedReport.latitude && selectedReport.longitude ? `${selectedReport.latitude.toFixed(4)}, ${selectedReport.longitude.toFixed(4)}` : "Chưa định vị"}
+                          {selectedReport.latitude && selectedReport.longitude ? `${selectedReport.latitude.toFixed(4)}, ${selectedReport.longitude.toFixed(4)}` : "Not positioned"}
                         </span>
                       </div>
 
@@ -757,18 +757,18 @@ export default function CommunityWorkerDashboard() {
                         {/* Nearest Hospital */}
                         <div className="bg-white p-4 rounded-xl border border-rose-100 shadow-sm flex flex-col justify-between">
                           <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Bệnh viện gần nhất</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nearest Hospital</p>
                             {(() => {
                               const nearestHosp = getNearestHospital(selectedReport.latitude, selectedReport.longitude, facilities);
                               if (nearestHosp) {
                                 return (
                                   <>
                                     <h5 className="font-bold text-gray-800 text-sm flex items-center gap-1.5"><Hospital className="w-4 h-4 text-blue-600 animate-pulse" /> {nearestHosp.name}</h5>
-                                    <p className="text-xs text-rose-700 font-bold mt-1.5 bg-rose-50 px-2.5 py-1 rounded-lg inline-block">Khoảng cách: {nearestHosp.distance} km</p>
+                                    <p className="text-xs text-rose-700 font-bold mt-1.5 bg-rose-50 px-2.5 py-1 rounded-lg inline-block">Distance: {nearestHosp.distance} km</p>
                                   </>
                                 );
                               }
-                              return <p className="text-xs text-gray-500">Không tìm thấy cơ sở online</p>;
+                              return <p className="text-xs text-gray-500">No active facility found</p>;
                             })()}
                           </div>
                         </div>
@@ -776,27 +776,27 @@ export default function CommunityWorkerDashboard() {
                         {/* Nearest Ambulance */}
                         <div className="bg-white p-4 rounded-xl border border-rose-100 shadow-sm flex flex-col justify-between">
                           <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Xe cấp cứu gần nhất</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nearest Ambulance</p>
                             {(() => {
                               const nearestAmb = getNearestAmbulance(selectedReport.latitude, selectedReport.longitude, ambulances);
                               if (nearestAmb) {
                                 return (
                                   <>
                                     <h5 className="font-bold text-gray-800 text-sm flex items-center gap-1.5"><Ambulance className="w-4 h-4 text-[#8B1E32] animate-bounce" /> {nearestAmb.id} ({nearestAmb.driver})</h5>
-                                    <p className="text-xs text-[#8B1E32] font-bold mt-1.5 bg-rose-50 px-2.5 py-1 rounded-lg inline-block">Khoảng cách: {nearestAmb.distance} km</p>
+                                    <p className="text-xs text-[#8B1E32] font-bold mt-1.5 bg-rose-50 px-2.5 py-1 rounded-lg inline-block">Distance: {nearestAmb.distance} km</p>
                                     <button 
                                       onClick={() => handleDispatchAmbulance(nearestAmb.id, selectedReport)}
                                       className="mt-3.5 w-full py-2 bg-[#8B1E32] text-white text-xs font-bold rounded-xl hover:bg-rose-900 transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transform transition-transform"
                                     >
-                                      <Send className="w-3.5 h-3.5" /> Điều phối xe này
+                                      <Send className="w-3.5 h-3.5" /> Dispatch this ambulance
                                     </button>
                                   </>
                                 );
                               }
                               return (
                                 <>
-                                  <p className="text-xs text-gray-500">Tất cả xe đang bận</p>
-                                  <p className="text-[10px] text-gray-400 mt-1">Chờ xe khác quay về hoặc liên hệ y tế địa phương.</p>
+                                  <p className="text-xs text-gray-500">All ambulances busy</p>
+                                  <p className="text-[10px] text-gray-400 mt-1">Wait for another vehicle to return or contact local health authorities.</p>
                                 </>
                               );
                             })()}
@@ -809,12 +809,12 @@ export default function CommunityWorkerDashboard() {
                     <div className="flex gap-2">
                       {selectedReport.status === 'NEW' && (
                         <button onClick={() => handleUpdateReportStatus(selectedReport.id, 'IN_PROGRESS')} className="px-4 py-2.5 bg-amber-500 text-white font-bold rounded-xl text-sm hover:bg-amber-600 transition-colors">
-                          Ghi nhận & Xử lý
+                          Acknowledge & Process
                         </button>
                       )}
                       {(selectedReport.status === 'NEW' || selectedReport.status === 'IN_PROGRESS') && (
                         <button onClick={() => handleUpdateReportStatus(selectedReport.id, 'TRANSFERRED')} className="px-4 py-2.5 bg-purple-600 text-white font-bold rounded-xl text-sm hover:bg-purple-700 transition-colors flex items-center gap-1">
-                          <Send className="w-4 h-4" /> Chuyển tiếp
+                          <Send className="w-4 h-4" /> Forward
                         </button>
                       )}
                     </div>
@@ -823,7 +823,7 @@ export default function CommunityWorkerDashboard() {
                         onClick={() => handleReportToHospital(selectedReport)}
                         className="px-4 py-2.5 bg-[#8B1E32] text-white font-bold rounded-xl text-sm hover:bg-rose-900 transition-colors flex items-center gap-1"
                       >
-                        <Hospital className="w-4 h-4" /> Báo bệnh viện
+                        <Hospital className="w-4 h-4" /> Notify Hospital
                       </button>
                     )}
                   </div>
@@ -840,8 +840,8 @@ export default function CommunityWorkerDashboard() {
               {/* Map */}
               <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                 <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-                  <h3 className="font-bold text-gray-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-[#8B1E32]" /> Bản đồ khu vực</h3>
-                  <span className="text-xs text-gray-400 font-medium">Định tuyến Xe Cấp Cứu Tối Giản — Ba Bể, Bắc Kạn</span>
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-[#8B1E32]" /> Regional Map</h3>
+                  <span className="text-xs text-gray-400 font-medium">Minimal Ambulance Routing — Ba Be, Bac Kan</span>
                 </div>
                 <div className="flex-1 relative bg-[#0f172a] flex items-center justify-center p-4">
                   {(() => {
@@ -855,12 +855,12 @@ export default function CommunityWorkerDashboard() {
                       }));
 
                     const mapConnections = [
-                      { from: "Trạm Y tế xã Bản Thi", to: "Trạm Y tế xã Bằng Phúc" },
-                      { from: "Trạm Y tế xã Bản Thi", to: "Trạm Y tế xã Quảng Khê" },
-                      { from: "Trạm Y tế xã Quảng Khê", to: "BV Đa khoa huyện Ba Bể" },
-                      { from: "Trạm Y tế xã Bằng Phúc", to: "BV Đa khoa huyện Ba Bể" },
-                      { from: "BV Đa khoa huyện Ba Bể", to: "Bản Khuôi" },
-                      { from: "BV Đa khoa huyện Ba Bể", to: "Phòng khám khu vực Nà Phặc" }
+                      { from: "Ban Thi Commune Health Station", to: "Bang Phuc Commune Health Station" },
+                      { from: "Ban Thi Commune Health Station", to: "Quang Khe Commune Health Station" },
+                      { from: "Quang Khe Commune Health Station", to: "Ba Be District General Hospital" },
+                      { from: "Bang Phuc Commune Health Station", to: "Ba Be District General Hospital" },
+                      { from: "Ba Be District General Hospital", to: "Ban Khuoi" },
+                      { from: "Ba Be District General Hospital", to: "Na Phac Regional Clinic" }
                     ];
 
                     const getAmbulanceCoords = (amb, idx, total) => {
@@ -1076,7 +1076,7 @@ export default function CommunityWorkerDashboard() {
                           <foreignObject x="15" y="15" width="220" height="100" className="pointer-events-none">
                             <div className="bg-slate-900/95 backdrop-blur-sm p-3 rounded-lg border border-blue-500/20 text-white space-y-1 shadow-lg text-left">
                               <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-blue-400 uppercase tracking-wider">LỘ TRÌNH ĐIỀU PHỐI</span>
+                                <span className="text-[9px] font-black text-blue-400 uppercase tracking-wider">DISPATCH ROUTE</span>
                                 <span className="bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded">{activeRoute.ambId}</span>
                               </div>
                               <p className="text-xs font-bold truncate text-slate-100">
@@ -1084,12 +1084,12 @@ export default function CommunityWorkerDashboard() {
                               </p>
                               <div className="flex items-center justify-between border-t border-slate-800 pt-1.5 mt-1.5">
                                 <div>
-                                  <span className="text-[8px] text-slate-400 block uppercase tracking-wider">Quãng đường</span>
+                                  <span className="text-[8px] text-slate-400 block uppercase tracking-wider">Distance</span>
                                   <span className="text-xs font-extrabold text-blue-400">{activeRoute.totalDistance} km</span>
                                 </div>
                                 <div className="text-right">
-                                  <span className="text-[8px] text-slate-400 block uppercase tracking-wider">Thời gian đi</span>
-                                  <span className="text-xs font-extrabold text-emerald-400">~{Math.round(activeRoute.totalDistance * 2 + 5)} phút</span>
+                                  <span className="text-[8px] text-slate-400 block uppercase tracking-wider">Travel Time</span>
+                                  <span className="text-xs font-extrabold text-emerald-400">~{Math.round(activeRoute.totalDistance * 2 + 5)} mins</span>
                                 </div>
                               </div>
                             </div>
@@ -1106,11 +1106,11 @@ export default function CommunityWorkerDashboard() {
                               >
                                 <X className="w-3 h-3" />
                               </button>
-                              <p className="text-[9px] font-bold text-yellow-500 uppercase">Thông tin địa điểm</p>
+                              <p className="text-[9px] font-bold text-yellow-500 uppercase">Location Info</p>
                               <h4 className="text-xs font-bold text-slate-100">{selectedNode}</h4>
                               <p className="text-[9px] text-slate-400 font-medium">
-                                {mapNodes[selectedNode]?.type === 'hospital' ? 'Bệnh viện trung tâm' : 
-                                 mapNodes[selectedNode]?.type === 'facility' ? 'Trạm Y tế xã' : 'Bản làng cư dân'}
+                                {mapNodes[selectedNode]?.type === 'hospital' ? 'Central Hospital' : 
+                                 mapNodes[selectedNode]?.type === 'facility' ? 'Commune Health Station' : 'Residential Hamlet'}
                               </p>
                             </div>
                           </foreignObject>
@@ -1121,24 +1121,24 @@ export default function CommunityWorkerDashboard() {
                           <rect width="320" height="20" rx="3" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.05)" strokeWidth="0.8" />
                           <g transform="translate(8, 10)">
                             <circle r="3" fill="#b91c1c" />
-                            <text x="6" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Bệnh viện</text>
+                            <text x="6" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Hospital</text>
                           </g>
                           <g transform="translate(70, 10)">
                             <circle r="3" fill="#0f766e" />
-                            <text x="6" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">TYT Xã</text>
+                            <text x="6" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Health Station</text>
                           </g>
                           <g transform="translate(125, 10)">
                             <circle r="3" fill="#ef4444" />
                             <circle r="5" fill="none" stroke="#ef4444" strokeWidth="0.8" className="pulse-ring" />
-                            <text x="10" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Sản phụ</text>
+                            <text x="10" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Patient</text>
                           </g>
                           <g transform="translate(185, 10)">
                             <rect x="-5" y="-3.5" width="10" height="7" rx="1" fill="#10b981" />
-                            <text x="8" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Xe sẵn sàng</text>
+                            <text x="8" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Ready</text>
                           </g>
                           <g transform="translate(255, 10)">
                             <rect x="-5" y="-3.5" width="10" height="7" rx="1" fill="#3b82f6" />
-                            <text x="8" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">Xe đang chạy</text>
+                            <text x="8" y="3" fill="#94a3b8" fontSize="7" fontWeight="bold">En Route</text>
                           </g>
                         </g>
                       </svg>
@@ -1149,7 +1149,7 @@ export default function CommunityWorkerDashboard() {
 
               {/* Ambulance List */}
               <div className="w-96 flex flex-col">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Danh sách xe</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Ambulance List</h3>
                 <div className="flex-1 overflow-y-auto space-y-3">
                   {ambulances.map(amb => {
                     const statusCfg = ambulanceStatusMap[amb.status];
@@ -1182,14 +1182,14 @@ export default function CommunityWorkerDashboard() {
                           </div>
                           {amb.destination && (
                             <div className="bg-blue-50 px-3 py-2 rounded-lg border border-blue-100 text-xs">
-                              <span className="font-bold text-blue-800">Lộ trình:</span>
+                              <span className="font-bold text-blue-800">Route:</span>
                               <span className="text-blue-700 ml-1">{amb.destination}</span>
                               <span className="text-blue-500 ml-2">ETA: {amb.eta}</span>
                             </div>
                           )}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-gray-400">Nhiên liệu:</span>
+                              <span className="text-xs text-gray-400">Fuel:</span>
                               <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
                                 <div className={`h-full rounded-full ${amb.fuel > 50 ? 'bg-emerald-500' : amb.fuel > 20 ? 'bg-amber-400' : 'bg-red-500'}`} style={{ width: `${amb.fuel}%` }}></div>
                               </div>
@@ -1203,7 +1203,7 @@ export default function CommunityWorkerDashboard() {
                             onClick={() => handleDispatchAmbulanceDirect(amb.id)}
                             className="mt-3 w-full py-2 bg-[#8B1E32] text-white text-sm font-bold rounded-xl hover:bg-rose-900 transition-colors flex items-center justify-center gap-1"
                           >
-                            <Send className="w-3.5 h-3.5" /> Điều xe
+                            <Send className="w-3.5 h-3.5" /> Dispatch
                           </button>
                         )}
                       </div>
@@ -1215,7 +1215,7 @@ export default function CommunityWorkerDashboard() {
                   onClick={handleReportToHospitalGlobal}
                   className="mt-4 w-full py-3.5 bg-gradient-to-r from-[#8B1E32] to-rose-700 text-white font-bold rounded-xl shadow-lg shadow-rose-600/20 hover:-translate-y-0.5 transition-transform flex items-center justify-center gap-2"
                 >
-                  <Hospital className="w-5 h-5" /> Báo về Bệnh viện
+                  <Hospital className="w-5 h-5" /> Notify Hospital
                 </button>
               </div>
             </div>
@@ -1231,21 +1231,21 @@ export default function CommunityWorkerDashboard() {
                 <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center"><Wifi className="w-6 h-6 text-emerald-600" /></div>
                 <div>
                   <h3 className="text-2xl font-extrabold text-gray-900">{facilities.filter(f => f.status === 'ONLINE').length}</h3>
-                  <p className="text-xs text-gray-500 font-medium">Đang hoạt động</p>
+                  <p className="text-xs text-gray-500 font-medium">Active</p>
                 </div>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
                 <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center"><WifiOff className="w-6 h-6 text-red-600" /></div>
                 <div>
                   <h3 className="text-2xl font-extrabold text-gray-900">{facilities.filter(f => f.status === 'OFFLINE').length}</h3>
-                  <p className="text-xs text-gray-500 font-medium">Ngưng hoạt động</p>
+                  <p className="text-xs text-gray-500 font-medium">Inactive</p>
                 </div>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
                 <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center"><Wrench className="w-6 h-6 text-amber-600" /></div>
                 <div>
                   <h3 className="text-2xl font-extrabold text-gray-900">{facilities.filter(f => f.status === 'MAINTENANCE').length}</h3>
-                  <p className="text-xs text-gray-500 font-medium">Đang bảo trì</p>
+                  <p className="text-xs text-gray-500 font-medium">Maintenance</p>
                 </div>
               </div>
             </div>
@@ -1259,8 +1259,8 @@ export default function CommunityWorkerDashboard() {
                   <div key={facility.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${facility.type === 'Bệnh viện' ? 'bg-blue-50' : 'bg-gray-50'}`}>
-                          {facility.type === 'Bệnh viện' ? <Hospital className="w-5 h-5 text-blue-600" /> : <Building2 className="w-5 h-5 text-gray-600" />}
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${facility.type === 'Hospital' ? 'bg-blue-50' : 'bg-gray-50'}`}>
+                          {facility.type === 'Hospital' ? <Hospital className="w-5 h-5 text-blue-600" /> : <Building2 className="w-5 h-5 text-gray-600" />}
                         </div>
                         <div>
                           <h4 className="font-bold text-gray-900">{facility.name}</h4>
@@ -1274,15 +1274,15 @@ export default function CommunityWorkerDashboard() {
                     <div className="grid grid-cols-3 gap-4 mb-4">
                       <div className="text-center bg-gray-50 p-3 rounded-xl">
                         <p className="text-2xl font-extrabold text-gray-900">{facility.staff}</p>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase">Nhân viên</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Staff</p>
                       </div>
                       <div className="text-center bg-gray-50 p-3 rounded-xl">
                         <p className="text-2xl font-extrabold text-gray-900">{facility.beds}</p>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase">Giường bệnh</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Beds</p>
                       </div>
                       <div className="text-center bg-gray-50 p-3 rounded-xl">
                         <p className="text-2xl font-extrabold text-gray-900">{facility.equipment.length}</p>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase">Thiết bị</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Equipment</p>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -1291,7 +1291,7 @@ export default function CommunityWorkerDashboard() {
                       ))}
                     </div>
                     <div className="mt-3 text-xs text-gray-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> Kiểm tra lần cuối: {facility.lastCheck}
+                      <Clock className="w-3 h-3" /> Last check: {facility.lastCheck}
                     </div>
                   </div>
                 );
@@ -1315,9 +1315,9 @@ export default function CommunityWorkerDashboard() {
               <div className="px-8 py-5 border-b border-gray-100 bg-[#8B1E32] text-white flex justify-between items-center shrink-0">
                 <div>
                   <h3 className="text-xl font-bold flex items-center gap-2">
-                    <Ambulance className="w-6 h-6 animate-pulse" /> Đề Xuất Điều Phối Y Tế Khẩn Cấp
+                    <Ambulance className="w-6 h-6 animate-pulse" /> Emergency Medical Dispatch Recommendation
                   </h3>
-                  <p className="text-white/80 text-xs mt-1">Phân tích GPS tối ưu lộ trình và tài nguyên cơ sở</p>
+                  <p className="text-white/80 text-xs mt-1">GPS analysis optimizing routes and facility resources</p>
                 </div>
                 <button 
                   onClick={() => setDispatchModalOpen(false)}
@@ -1338,12 +1338,12 @@ export default function CommunityWorkerDashboard() {
                       dispatchReport.urgency === 'YELLOW' ? 'bg-amber-100 border-amber-200 text-amber-700' :
                       'bg-emerald-100 border-emerald-200 text-emerald-700'
                     } uppercase tracking-wider mb-2.5 inline-block`}>
-                      Mức độ: {dispatchReport.urgency === 'RED' ? 'Khẩn cấp (Đỏ)' : dispatchReport.urgency === 'YELLOW' ? 'Theo dõi (Vàng)' : 'Thông thường (Xanh)'}
+                      Severity: {dispatchReport.urgency === 'RED' ? 'Urgent (Red)' : dispatchReport.urgency === 'YELLOW' ? 'Monitoring (Yellow)' : 'Normal (Green)'}
                     </span>
                     <h4 className="text-lg font-black text-gray-900">{dispatchReport.patientName}</h4>
                     <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5"><MapPin className="w-4 h-4 text-rose-500" />{dispatchReport.location}</p>
                     <div className="mt-3.5 bg-white px-4 py-2.5 rounded-xl border border-rose-100/50 text-xs font-semibold text-gray-600 flex justify-between items-center">
-                      <span>Tọa độ GPS sản phụ:</span>
+                      <span>Patient GPS Coordinates:</span>
                       <span className="font-bold text-gray-900">{dispatchReport.latitude?.toFixed(4)}, {dispatchReport.longitude?.toFixed(4)}</span>
                     </div>
                     <p className="text-xs text-gray-600 italic mt-3 bg-white/40 p-3 rounded-xl border border-dashed border-rose-100">
@@ -1354,7 +1354,7 @@ export default function CommunityWorkerDashboard() {
                   {/* Ambulance Selection List */}
                   <div>
                     <h4 className="text-sm font-extrabold text-gray-900 mb-3.5 flex items-center gap-1.5">
-                      <Truck className="w-4.5 h-4.5 text-[#8B1E32]" /> 1. Chọn Xe cấp cứu sẵn sàng
+                      <Truck className="w-4.5 h-4.5 text-[#8B1E32]" /> 1. Select Available Ambulance
                     </h4>
                     <div className="space-y-3">
                       {ambulances.map(amb => {
@@ -1389,11 +1389,11 @@ export default function CommunityWorkerDashboard() {
                             <div className="text-right">
                               {isAvailable ? (
                                 <>
-                                  <span className="text-xs font-black text-emerald-600 block">Sẵn sàng</span>
-                                  <span className="text-[11px] font-bold text-gray-500">Cách: {dist} km</span>
+                                  <span className="text-xs font-black text-emerald-600 block">Available</span>
+                                  <span className="text-[11px] font-bold text-gray-500">Distance: {dist} km</span>
                                 </>
                               ) : (
-                                <span className="text-xs font-bold text-gray-400">Đang bận</span>
+                                <span className="text-xs font-bold text-gray-400">Busy</span>
                               )}
                             </div>
                           </div>
@@ -1406,7 +1406,7 @@ export default function CommunityWorkerDashboard() {
                 {/* Right: Hospital Recommendation Suggestions */}
                 <div className="flex flex-col">
                   <h4 className="text-sm font-extrabold text-gray-900 mb-3.5 flex items-center gap-1.5">
-                    <Building2 className="w-4.5 h-4.5 text-[#8B1E32]" /> 2. Đề xuất điểm đến (Đã xếp hạng phù hợp)
+                    <Building2 className="w-4.5 h-4.5 text-[#8B1E32]" /> 2. Destination Recommendations (Ranked by Suitability)
                   </h4>
                   <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[350px]">
                     {getHospitalRecommendations(dispatchReport).map((fac, idx) => {
@@ -1425,18 +1425,18 @@ export default function CommunityWorkerDashboard() {
                           <span className={`absolute top-4 right-4 text-[9px] font-bold px-2 py-0.5 rounded-full ${
                             idx === 0 ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-600'
                           }`}>
-                            Khớp #{idx + 1}
+                            Match #{idx + 1}
                           </span>
 
                           <div className="flex items-start gap-2.5 pr-14">
                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                               isSelected ? 'bg-rose-50 text-[#8B1E32] border border-rose-100' : 'bg-gray-50 text-gray-500'
                             }`}>
-                              {fac.type === 'Bệnh viện' ? <Hospital className="w-5 h-5" /> : <Building2 className="w-5 h-5" />}
+                              {fac.type === 'Hospital' ? <Hospital className="w-5 h-5" /> : <Building2 className="w-5 h-5" />}
                             </div>
                             <div>
                               <h5 className="font-bold text-sm text-gray-900">{fac.name}</h5>
-                              <p className="text-[11px] text-gray-500 mt-0.5">{fac.type} • Tải giường: <span className={`font-bold ${fac.loadColor}`}>{fac.occupiedBeds}/{fac.beds} ({fac.occupancyRate}%) - {fac.loadLabel}</span></p>
+                              <p className="text-[11px] text-gray-500 mt-0.5">{fac.type} • Bed occupancy: <span className={`font-bold ${fac.loadColor}`}>{fac.occupiedBeds}/{fac.beds} ({fac.occupancyRate}%) - {fac.loadLabel}</span></p>
                             </div>
                           </div>
 
@@ -1447,8 +1447,8 @@ export default function CommunityWorkerDashboard() {
 
                           {/* Distance & ETA */}
                           <div className="flex items-center justify-between text-xs font-semibold text-gray-600 border-t border-gray-100 pt-2.5 mt-1">
-                            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" /> Tối ưu: {fac.distance} km</span>
-                            <span className="text-emerald-600">ETA ước tính: ~{fac.eta} phút</span>
+                            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gray-400" /> Optimal: {fac.distance} km</span>
+                            <span className="text-emerald-600">Estimated ETA: ~{fac.eta} mins</span>
                           </div>
                         </div>
                       );
@@ -1460,21 +1460,21 @@ export default function CommunityWorkerDashboard() {
               {/* Footer */}
               <div className="px-8 py-5 border-t border-gray-100 bg-gray-55/40 flex items-center justify-between shrink-0">
                 <p className="text-xs text-gray-500 max-w-md">
-                  * Lộ trình di chuyển thực tế sẽ được hiển thị ngay trên bản đồ GPS sau khi nhân viên xác nhận.
+                  * Actual travel route will be displayed on the GPS map after confirmation.
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setDispatchModalOpen(false)}
                     className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-sm transition-colors"
                   >
-                    Hủy bỏ
+                    Cancel
                   </button>
                   <button
                     onClick={handleConfirmDispatch}
                     disabled={!selectedAmbulanceId || !selectedHospitalId}
                     className="px-6 py-2.5 bg-[#8B1E32] text-white font-bold rounded-xl text-sm hover:bg-rose-900 transition-colors shadow-lg shadow-rose-600/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                   >
-                    <Send className="w-4 h-4" /> Xác nhận Điều phối
+                    <Send className="w-4 h-4" /> Confirm Dispatch
                   </button>
                 </div>
               </div>

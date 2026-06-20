@@ -9,45 +9,45 @@ let mockCases = [
     id: 1, 
     patientName: "Lò Thị Mai", 
     phone_number: "0901212112",
-    summary: "Bệnh nhân có biểu hiện huyết áp cao (145/90) và đau đầu dữ dội kéo dài. Có nguy cơ tiền sản giật, cần theo dõi sát sao.", 
+    summary: "Patient presents with high blood pressure (145/90) and persistent severe headache. High risk of preeclampsia, requires close monitoring.", 
     confidence: 85, 
     urgency: "RED", 
     status: "WAITING_DOCTOR", 
     created_at: new Date(Date.now() - 15 * 60000),
-    location: "Bản Bành, xã Cổ Linh",
+    location: "Ban Banh, Co Linh Commune",
     latitude: 22.42,
     longitude: 105.62,
     health_checklist: [
-      { label: "Huyết áp", value: "145/90 mmHg", tag: "RED", note: "Tăng huyết áp thai kỳ - nguy cơ tiền sản giật" },
-      { label: "Cân nặng mẹ", value: "55 kg", tag: "GREEN", note: "Phù hợp với tuổi thai" },
-      { label: "Tim thai", value: "148 nhịp/phút", tag: "GREEN", note: "Nhịp tim thai bình thường" },
-      { label: "Nước ối (AFI)", value: "4 cm", tag: "RED", note: "Thiểu ối — dưới mức an toàn" },
-      { label: "Protein niệu", value: "+2", tag: "RED", note: "Protein niệu cao, liên quan tiền sản giật" },
-      { label: "Đường huyết", value: "5.1 mmol/L", tag: "GREEN", note: "Bình thường" },
-      { label: "Tuổi thai", value: "34 tuần", tag: "GREEN", note: "Phù hợp kích thước" },
-      { label: "Triệu chứng đau đầu", value: "Có — kéo dài 5 ngày", tag: "RED", note: "Dấu hiệu nguy hiểm" }
+      { label: "Blood Pressure", value: "145/90 mmHg", tag: "RED", note: "Gestational hypertension - risk of preeclampsia" },
+      { label: "Maternal Weight", value: "55 kg", tag: "GREEN", note: "Appropriate for gestational age" },
+      { label: "Fetal Heart Rate", value: "148 bpm", tag: "GREEN", note: "Normal fetal heart rate" },
+      { label: "Amniotic Fluid (AFI)", value: "4 cm", tag: "RED", note: "Oligohydramnios — below safe level" },
+      { label: "Urine Protein", value: "+2", tag: "RED", note: "High urine protein, associated with preeclampsia" },
+      { label: "Blood Glucose", value: "5.1 mmol/L", tag: "GREEN", note: "Normal" },
+      { label: "Gestational Age", value: "34 weeks", tag: "GREEN", note: "Consistent with size" },
+      { label: "Headache Symptoms", value: "Yes — persisting for 5 days", tag: "RED", note: "Danger sign" }
     ]
   },
   { 
     id: 2, 
     patientName: "Sầm Văn Bình", 
     phone_number: "0987654321",
-    summary: "Bệnh nhân báo cáo thai nhi ít máy trong 12 giờ qua. Cần hẹn đến trạm y tế để đo tim thai và siêu âm kiểm tra lượng nước ối.", 
+    summary: "Patient reports reduced fetal movement in the past 12 hours. Scheduled appointment at the health station for fetal heart rate measurement and amniotic fluid ultrasound check.", 
     confidence: 92, 
     urgency: "YELLOW", 
     status: "WAITING_MIDWIFE", 
     created_at: new Date(Date.now() - 45 * 60000),
-    location: "Bản Nghèn, xã Khang Ninh",
+    location: "Ban Nghen, Khang Ninh Commune",
     latitude: 22.38,
     longitude: 105.54,
     health_checklist: [
-      { label: "Huyết áp", value: "120/75 mmHg", tag: "GREEN", note: "Huyết áp bình thường" },
-      { label: "Cân nặng mẹ", value: "62 kg", tag: "GREEN", note: "Phù hợp" },
-      { label: "Tim thai", value: "128 nhịp/phút", tag: "YELLOW", note: "Hơi thấp — cần theo dõi thêm" },
-      { label: "Cử động thai", value: "< 10 lần/12h", tag: "YELLOW", note: "Thai ít máy, cần siêu âm kiểm tra" },
-      { label: "Nước ối (AFI)", value: "8 cm", tag: "GREEN", note: "Trong ngưỡng bình thường" },
-      { label: "Tuổi thai", value: "36 tuần", tag: "GREEN", note: "Phù hợp" },
-      { label: "Đường huyết", value: "6.8 mmol/L", tag: "YELLOW", note: "Hơi cao, cần theo dõi tiểu đường thai kỳ" }
+      { label: "Blood Pressure", value: "120/75 mmHg", tag: "GREEN", note: "Normal blood pressure" },
+      { label: "Maternal Weight", value: "62 kg", tag: "GREEN", note: "Appropriate" },
+      { label: "Fetal Heart Rate", value: "128 bpm", tag: "YELLOW", note: "Mildly low — additional monitoring required" },
+      { label: "Fetal Movements", value: "< 10 times/12h", tag: "YELLOW", note: "Reduced fetal movement, ultrasound check required" },
+      { label: "Amniotic Fluid (AFI)", value: "8 cm", tag: "GREEN", note: "Within normal limits" },
+      { label: "Gestational Age", value: "36 weeks", tag: "GREEN", note: "Appropriate" },
+      { label: "Blood Glucose", value: "6.8 mmol/L", tag: "YELLOW", note: "Mildly elevated, monitor for gestational diabetes" }
     ]
   }
 ];
@@ -86,7 +86,7 @@ async function uploadDocument(req, res) {
 
     const caseData = {
       phone_number: phoneNumber,
-      patientName: patientName || aiResult.patientName || ("Bệnh nhân " + phoneNumber.slice(-4)),
+      patientName: patientName || aiResult.patientName || ("Patient " + phoneNumber.slice(-4)),
       document_url: publicUrl,
       summary: aiResult.summary,
       urgency: aiResult.urgency,
@@ -97,7 +97,7 @@ async function uploadDocument(req, res) {
       tay_translation: aiResult.tay_translation,
       status: status,
       created_at: new Date(),
-      location: location || "Chưa xác định",
+      location: location || "Undetermined",
       latitude: parseFloat(latitude) || 22.415,
       longitude: parseFloat(longitude) || 105.625
     };

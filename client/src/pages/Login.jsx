@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE_URL } from "../config";
 
 const MOCK_LOCATIONS = [
-  { name: "Bản Khuôi, xã Quảng Khê", latitude: 22.425, longitude: 105.635 },
-  { name: "Bản Thi, xã Bản Thi", latitude: 22.390, longitude: 105.580 },
-  { name: "Xã Quảng Khê, Ba Bể", latitude: 22.410, longitude: 105.610 },
-  { name: "Xã Bằng Phúc, Chợ Đồn", latitude: 22.385, longitude: 105.590 },
-  { name: "Thôn Nà Phặc, Ngân Sơn", latitude: 22.450, longitude: 105.650 },
+  { name: "Ban Khuoi, Quang Khe commune", latitude: 22.425, longitude: 105.635 },
+  { name: "Ban Thi, Ban Thi commune", latitude: 22.390, longitude: 105.580 },
+  { name: "Quang Khe commune, Ba Be", latitude: 22.410, longitude: 105.610 },
+  { name: "Bang Phuc commune, Cho Don", latitude: 22.385, longitude: 105.590 },
+  { name: "Na Phac hamlet, Ngan Son", latitude: 22.450, longitude: 105.650 },
 ];
 
 export default function Login() {
@@ -25,7 +25,7 @@ export default function Login() {
   const [phone, setPhone] = useState("");
   const [selectedLocIndex, setSelectedLocIndex] = useState(0);
   const [gpsCoords, setGpsCoords] = useState({ latitude: 22.415, longitude: 105.625 });
-  const [gpsStatus, setGpsStatus] = useState("Sử dụng GPS mặc định của Bản");
+  const [gpsStatus, setGpsStatus] = useState("Using default village GPS");
 
   // Sync GPS default location on selector change
   useEffect(() => {
@@ -34,29 +34,29 @@ export default function Login() {
         latitude: MOCK_LOCATIONS[selectedLocIndex].latitude,
         longitude: MOCK_LOCATIONS[selectedLocIndex].longitude
       });
-      setGpsStatus("Sử dụng GPS mặc định của Bản");
+      setGpsStatus("Using default village GPS");
     }
   }, [selectedLocIndex, isRegister]);
 
   const handleGetDeviceGPS = () => {
     if ("geolocation" in navigator) {
-      setGpsStatus("Đang định vị...");
+      setGpsStatus("Locating...");
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setGpsCoords({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
           });
-          setGpsStatus("📍 Định vị thành công từ thiết bị của bạn!");
+          setGpsStatus("📍 Successfully located from your device!");
         },
         (err) => {
-          console.warn("Lỗi lấy GPS:", err);
-          setGpsStatus("Không thể lấy GPS thiết bị. Sử dụng tọa độ của bản.");
+          console.warn("GPS error:", err);
+          setGpsStatus("Failed to obtain device GPS. Using village coordinates.");
         },
         { enableHighAccuracy: true, timeout: 5000 }
       );
     } else {
-      setGpsStatus("Thiết bị không hỗ trợ định vị GPS.");
+      setGpsStatus("Device does not support GPS location.");
     }
   };
 
@@ -105,12 +105,12 @@ export default function Login() {
           navigate("/community");
         }
       } else {
-        setError(data.error || "Có lỗi xảy ra. Vui lòng kiểm tra lại.");
+        setError(data.error || "An error occurred. Please try again.");
       }
     } catch (err) {
       console.error(err);
       setIsLoading(false);
-      setError("Không thể kết nối đến máy chủ.");
+      setError("Could not connect to the server.");
     }
   };
 
@@ -130,8 +130,8 @@ export default function Login() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-100 text-rose-700 rounded-full mb-3">
             <HeartPulse className="w-8 h-8" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900">{isRegister ? "Đăng Ký Mẹ Bầu" : "Đăng Nhập"}</h2>
-          <p className="text-gray-500 mt-2">Hệ thống phân loại thai kỳ ViTem</p>
+          <h2 className="text-3xl font-extrabold text-gray-900">{isRegister ? "Mother Registration" : "Login"}</h2>
+          <p className="text-gray-500 mt-2">ViTem Maternal Triage System</p>
         </div>
 
         <AnimatePresence mode="wait">
@@ -150,7 +150,7 @@ export default function Login() {
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Tên đăng nhập</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Username</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <User className="w-4 h-4 text-gray-400" />
@@ -159,7 +159,7 @@ export default function Login() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder={isRegister ? "Tên tài khoản viết liền không dấu" : "benhnhan, nuhoisinh, bacsi, congdong"}
+                placeholder={isRegister ? "Enter username (alphanumeric only)" : "benhnhan, nuhoisinh, bacsi, congdong"}
                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
                 required
               />
@@ -167,7 +167,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Mật khẩu</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Password</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Lock className="w-4 h-4 text-gray-400" />
@@ -190,7 +190,7 @@ export default function Login() {
               className="space-y-4 pt-2 border-t border-gray-100"
             >
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Họ và tên mẹ bầu</label>
+                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Mother's Full Name</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <User className="w-4 h-4 text-gray-400" />
@@ -199,7 +199,7 @@ export default function Login() {
                     type="text"
                     value={patientName}
                     onChange={(e) => setPatientName(e.target.value)}
-                    placeholder="Ví dụ: Triệu Thị Hoa"
+                    placeholder="e.g. Trieu Thi Hoa"
                     className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
                     required
                   />
@@ -207,7 +207,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Số điện thoại liên hệ</label>
+                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider">Contact Phone Number</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <Phone className="w-4 h-4 text-gray-400" />
@@ -216,7 +216,7 @@ export default function Login() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Ví dụ: 0912345678"
+                    placeholder="e.g. 0912345678"
                     className="w-full pl-10 pr-4 py-2.5 bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all text-sm font-medium"
                     required
                   />
@@ -224,7 +224,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider font-semibold">Chọn bản/làng cư trú</label>
+                <label className="block text-xs font-bold text-gray-700 mb-1 text-left uppercase tracking-wider font-semibold">Select Village of Residence</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <MapPin className="w-4 h-4 text-rose-700" />
@@ -251,12 +251,12 @@ export default function Login() {
                     onClick={handleGetDeviceGPS}
                     className="text-[10px] font-bold bg-white text-[#8B1E32] px-2.5 py-1 rounded-md border border-rose-200 hover:bg-rose-50 transition-colors shadow-sm"
                   >
-                    Lấy GPS Thiết Bị
+                    Get Device GPS
                   </button>
                 </div>
                 <div className="text-[11px] text-gray-500">
-                  Kinh độ: <strong className="text-gray-700">{gpsCoords.longitude.toFixed(5)}</strong>, 
-                  Vĩ độ: <strong className="text-gray-700">{gpsCoords.latitude.toFixed(5)}</strong>
+                  Longitude: <strong className="text-gray-700">{gpsCoords.longitude.toFixed(5)}</strong>, 
+                  Latitude: <strong className="text-gray-700">{gpsCoords.latitude.toFixed(5)}</strong>
                 </div>
               </div>
             </motion.div>
@@ -270,7 +270,7 @@ export default function Login() {
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
-              isRegister ? "Đăng Ký Tài Khoản" : "Đăng Nhập"
+              isRegister ? "Register Account" : "Login"
             )}
           </button>
         </form>
@@ -283,18 +283,18 @@ export default function Login() {
             }}
             className="text-sm font-bold text-rose-700 hover:text-rose-800 transition-colors"
           >
-            {isRegister ? "Đã có tài khoản? Đăng nhập ngay" : "Chưa có tài khoản? Tạo tài khoản bệnh nhân"}
+            {isRegister ? "Already have an account? Login now" : "No account yet? Create patient account"}
           </button>
         </div>
         
         {!isRegister && (
           <div className="mt-6 text-center text-[11px] text-gray-500 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-            <p className="font-bold text-gray-700 mb-1.5">💡 Đăng nhập thử nghiệm nhanh:</p>
+            <p className="font-bold text-gray-700 mb-1.5">💡 Quick Demo Login Accounts:</p>
             <ul className="space-y-1 text-left inline-block">
-              <li>• <strong className="text-rose-700">benhnhan</strong> (Bệnh nhân Demo)</li>
-              <li>• <strong className="text-rose-700">nuhoisinh</strong> (Nữ Hộ Sinh)</li>
-              <li>• <strong className="text-rose-700">bacsi</strong> (Bác Sĩ Trưởng Khoa)</li>
-              <li>• <strong className="text-rose-700">congdong</strong> (Cán Bộ Cộng Đồng)</li>
+              <li>• <strong className="text-rose-700">benhnhan</strong> (Demo Patient)</li>
+              <li>• <strong className="text-rose-700">nuhoisinh</strong> (Midwife)</li>
+              <li>• <strong className="text-rose-700">bacsi</strong> (Chief Doctor)</li>
+              <li>• <strong className="text-rose-700">congdong</strong> (Community Worker)</li>
             </ul>
           </div>
         )}

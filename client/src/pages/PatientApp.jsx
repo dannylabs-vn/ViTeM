@@ -34,13 +34,13 @@ export default function PatientApp() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
 
   const SUGGESTED_SYMPTOMS = [
-    { id: "sốt", label: "Sốt / Nóng đầu", urgency: "RED" },
-    { id: "ra_máu", label: "Ra máu âm đạo", urgency: "RED" },
-    { id: "vỡ_ối", label: "Vỡ nước ối", urgency: "RED" },
-    { id: "đau_bụng", label: "Đau bụng dữ dội", urgency: "RED" },
-    { id: "đau_đầu", label: "Đau đầu / Hoa mắt", urgency: "YELLOW" },
-    { id: "thai_ít_máy", label: "Thai ít máy (ít đạp)", urgency: "YELLOW" },
-    { id: "phù_chân", label: "Phù chân / Tay", urgency: "YELLOW" },
+    { id: "sốt", label: "Fever / Body heat", urgency: "RED" },
+    { id: "ra_máu", label: "Vaginal bleeding", urgency: "RED" },
+    { id: "vỡ_ối", label: "Water breaking", urgency: "RED" },
+    { id: "đau_bụng", label: "Severe abdominal pain", urgency: "RED" },
+    { id: "đau_đầu", label: "Headache / Dizziness", urgency: "YELLOW" },
+    { id: "thai_ít_máy", label: "Decreased fetal movement", urgency: "YELLOW" },
+    { id: "phù_chân", label: "Swelling in legs/arms", urgency: "YELLOW" },
   ];
 
   const handleFileChange = (e) => {
@@ -84,21 +84,21 @@ export default function PatientApp() {
     const waitingMidwife = patientCases.filter(c => c.status === 'WAITING_MIDWIFE').length;
     
     const data = [
-      { name: "Đã xử lý xong", value: completed, color: "#059669" },
-      { name: "Đang chờ Bác sĩ", value: waitingDoctor, color: "#991B1B" },
-      { name: "Đang chờ Hộ sinh", value: waitingMidwife, color: "#D97706" },
+      { name: "Processed", value: completed, color: "#059669" },
+      { name: "Waiting for Doctor", value: waitingDoctor, color: "#991B1B" },
+      { name: "Waiting for Midwife", value: waitingMidwife, color: "#D97706" },
     ].filter(d => d.value > 0);
-    return data.length > 0 ? data : [{ name: "Chưa có hồ sơ", value: 1, color: "#D1D5DB" }];
+    return data.length > 0 ? data : [{ name: "No records", value: 1, color: "#D1D5DB" }];
   };
 
   const getWeeklyData = () => {
-    const daysOfWeek = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const result = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dayLabel = daysOfWeek[d.getDay()];
-      const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+      const dateStr = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
       
       const casesInDay = patientCases.filter(c => {
         const cDate = new Date(c.created_at);
@@ -129,8 +129,8 @@ export default function PatientApp() {
               setResult(prev => ({
                 ...prev,
                 status: "COMPLETED",
-                title: "Đã có phản hồi từ Y Bác Sĩ",
-                message: "Bác sĩ/Nữ hộ sinh đã xem xét hồ sơ của bạn. Vui lòng làm theo các hướng dẫn bên dưới.",
+                title: "Response Received from Healthcare Provider",
+                message: "A doctor/midwife has reviewed your records. Please follow the instructions below.",
                 instruction_for_patient: updatedCase.instruction_for_patient
               }));
               clearInterval(interval);
@@ -138,8 +138,8 @@ export default function PatientApp() {
               // OS Notification
               if ("Notification" in window) {
                 if (Notification.permission === "granted") {
-                  const notif = new Notification("🔔 Phản hồi từ Y Bác Sĩ", {
-                    body: "Hồ sơ y tế của bạn đã được duyệt. Bấm vào đây để xem hướng dẫn dặn dò.",
+                  const notif = new Notification("🔔 Response from Healthcare Provider", {
+                    body: "Your medical records have been approved. Click here to view instructions.",
                   });
                   notif.onclick = () => window.focus();
                 }
@@ -191,17 +191,17 @@ export default function PatientApp() {
         const aiResult = data.case;
         setCaseId(aiResult.id);
         
-        let titleStr = "Đã gửi hồ sơ";
-        let messageStr = "Hồ sơ của bạn đã được hệ thống tiếp nhận.";
+        let titleStr = "Record Submitted";
+        let messageStr = "Your records have been successfully received by the system.";
         if (aiResult.status === "WAITING_DOCTOR") {
-          titleStr = "Đã gửi cho Bác Sĩ";
-          messageStr = "Hồ sơ của bạn đang được Bác sĩ kiểm tra khẩn cấp.";
+          titleStr = "Sent to Doctor";
+          messageStr = "Your records are undergoing urgent review by a Doctor.";
         } else if (aiResult.status === "WAITING_MIDWIFE") {
-          titleStr = "Đã gửi cho Nữ Hộ Sinh";
-          messageStr = "Hồ sơ của bạn đang được Nữ Hộ sinh xem xét và lên lịch.";
+          titleStr = "Sent to Midwife";
+          messageStr = "Your records are currently being reviewed by a Midwife.";
         } else if (aiResult.status === "COMPLETED") {
-          titleStr = "Sức Khỏe Bình Thường";
-          messageStr = "Hệ thống AI đánh giá các chỉ số của bạn ổn định. Vui lòng duy trì thói quen sinh hoạt tốt.";
+          titleStr = "Normal Health Status";
+          messageStr = "The AI system has evaluated your indicators as stable. Please maintain good lifestyle habits.";
         }
 
         setResult({
@@ -216,12 +216,12 @@ export default function PatientApp() {
           urgency: aiResult.urgency
         });
       } else {
-        alert("Lỗi khi xử lý tài liệu.");
+        alert("Error processing document.");
       }
     } catch (error) {
       console.error(error);
       setIsProcessing(false);
-      alert("Không thể kết nối đến máy chủ.");
+      alert("Could not connect to the server.");
     }
   };
 
@@ -247,18 +247,18 @@ export default function PatientApp() {
                 onClick={() => setActiveView("upload")}
                 className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeView === 'upload' ? 'bg-white text-rose-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
-                Gửi hồ sơ
+                Submit Record
               </button>
               <button
                 onClick={() => setActiveView("analytics")}
                 className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${activeView === 'analytics' ? 'bg-white text-rose-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
-                Thống kê
+                Analytics
               </button>
             </div>
             <a href="tel:115" className="flex items-center gap-2 bg-red-50 text-red-700 px-4 py-2 rounded-full font-bold hover:bg-red-100 transition-colors">
               <PhoneCall className="w-5 h-5" />
-              <span className="hidden sm:inline">Gọi Cấp Cứu 115</span>
+              <span className="hidden sm:inline">Call Emergency 115</span>
               <span className="sm:hidden">115</span>
             </a>
             <button 
@@ -266,7 +266,7 @@ export default function PatientApp() {
               className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-600 px-4.5 py-2 rounded-full font-bold transition-colors shadow-sm"
             >
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Đăng xuất</span>
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
@@ -284,13 +284,13 @@ export default function PatientApp() {
               <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-8 h-8 text-rose-700 animate-pulse" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Tra cứu lịch sử sức khỏe</h2>
-              <p className="text-gray-500 text-sm">Vui lòng nhập số điện thoại liên hệ để xem toàn bộ lịch sử ca bệnh và hướng dẫn của bác sĩ.</p>
+              <h2 className="text-2xl font-bold text-gray-900">Health History Search</h2>
+              <p className="text-gray-500 text-sm">Please enter your phone number to view your entire medical history and doctor recommendations.</p>
               <input 
                 type="tel" 
                 value={searchPhone}
                 onChange={(e) => setSearchPhone(e.target.value)}
-                placeholder="Nhập số điện thoại (ví dụ: 0912345678)"
+                placeholder="Enter phone number (e.g., 0912345678)"
                 className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl outline-none focus:border-rose-500 focus:bg-white text-center font-bold text-lg transition-colors"
               />
               <button 
@@ -299,20 +299,20 @@ export default function PatientApp() {
                     setPhone(searchPhone);
                     fetchPatientCases(searchPhone);
                   } else {
-                    alert("Vui lòng nhập số điện thoại");
+                    alert("Please enter a phone number");
                   }
                 }}
                 className="w-full py-4 bg-rose-700 text-white rounded-xl font-bold hover:bg-rose-800 transition-colors shadow-lg shadow-rose-700/20 active:scale-[0.98] transition-transform"
               >
-                Xem Thống Kê & Lịch Sử
+                View Analytics & History
               </button>
             </motion.div>
           ) : (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                 <div>
-                  <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Thống kê sức khỏe</h2>
-                  <p className="text-gray-500 mt-1">Lịch sử y tế cho số điện thoại: <strong className="text-rose-800">{phone}</strong></p>
+                  <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Health Analytics</h2>
+                  <p className="text-gray-500 mt-1">Medical history for phone number: <strong className="text-rose-800">{phone}</strong></p>
                 </div>
                 <button 
                   onClick={() => {
@@ -321,7 +321,7 @@ export default function PatientApp() {
                   }}
                   className="text-xs font-bold text-rose-800 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg border border-rose-200 transition-colors self-start sm:self-center"
                 >
-                  Thay đổi SĐT tra cứu
+                  Change Search Phone
                 </button>
               </div>
 
@@ -332,7 +332,7 @@ export default function PatientApp() {
                     <FileText className="w-5 h-5 text-rose-600" />
                   </div>
                   <h3 className="text-3xl font-extrabold text-gray-900">{patientCases.length}</h3>
-                  <p className="text-xs text-gray-500 font-bold mt-1">Tổng hồ sơ gửi</p>
+                  <p className="text-xs text-gray-500 font-bold mt-1">Total Records Sent</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mb-3">
@@ -341,7 +341,7 @@ export default function PatientApp() {
                   <h3 className="text-3xl font-extrabold text-gray-900">
                     {patientCases.filter(c => c.status === 'COMPLETED').length}
                   </h3>
-                  <p className="text-xs text-gray-500 font-bold mt-1">Đã xử lý xong</p>
+                  <p className="text-xs text-gray-500 font-bold mt-1">Completed</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center mb-3">
@@ -350,7 +350,7 @@ export default function PatientApp() {
                   <h3 className="text-3xl font-extrabold text-gray-900">
                     {patientCases.filter(c => c.status !== 'COMPLETED').length}
                   </h3>
-                  <p className="text-xs text-gray-500 font-bold mt-1">Đang xử lý</p>
+                  <p className="text-xs text-gray-500 font-bold mt-1">In Progress</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3">
@@ -359,7 +359,7 @@ export default function PatientApp() {
                   <h3 className="text-3xl font-extrabold text-gray-900">
                     {patientCases.length > 0 ? Math.round((patientCases.filter(c => c.status === 'COMPLETED').length / patientCases.length) * 100) : 0}%
                   </h3>
-                  <p className="text-xs text-gray-500 font-bold mt-1">Tỷ lệ hoàn thành</p>
+                  <p className="text-xs text-gray-500 font-bold mt-1">Completion Rate</p>
                 </div>
               </div>
 
@@ -367,16 +367,16 @@ export default function PatientApp() {
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                   <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                    <PieChartIcon className="w-5 h-5 text-rose-600" /> Phân bố trạng thái
+                    <PieChartIcon className="w-5 h-5 text-rose-600" /> Status Distribution
                   </h3>
-                  <p className="text-xs text-gray-500 mb-4">Tỷ lệ hồ sơ theo trạng thái xử lý thực tế</p>
+                  <p className="text-xs text-gray-500 mb-4">Ratio of records by actual processing status</p>
                   <StatusPieChart data={getStatusPieData()} />
                 </div>
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                   <h3 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-rose-600" /> Hồ sơ trong tuần
+                    <BarChart3 className="w-5 h-5 text-rose-600" /> Weekly Records
                   </h3>
-                  <p className="text-xs text-gray-500 mb-4">Số lượng hồ sơ gửi và xử lý trong 7 ngày gần đây</p>
+                  <p className="text-xs text-gray-500 mb-4">Number of records sent and processed in the last 7 days</p>
                   <WeeklyBarChart data={getWeeklyData()} />
                 </div>
               </div>
@@ -384,10 +384,10 @@ export default function PatientApp() {
               {/* Lịch sử hồ sơ chi tiết */}
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-rose-600" /> Lịch sử tư vấn sức khỏe
+                  <FileText className="w-5 h-5 text-rose-600" /> Health Consultation History
                 </h3>
                 {patientCases.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-6">Chưa có dữ liệu lịch sử khám thai.</p>
+                  <p className="text-gray-400 text-sm text-center py-6">No pregnancy examination history data.</p>
                 ) : (
                   <div className="space-y-4">
                     {patientCases.map((c) => (
@@ -403,10 +403,10 @@ export default function PatientApp() {
                               c.urgency === 'RED' ? 'bg-red-100 text-red-800' :
                               c.urgency === 'YELLOW' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
                             }`}>
-                              {c.urgency === 'RED' ? 'Nguy cơ cao' : c.urgency === 'YELLOW' ? 'Theo dõi' : 'Bình thường'}
+                              {c.urgency === 'RED' ? 'High Risk' : c.urgency === 'YELLOW' ? 'Needs Monitoring' : 'Normal'}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-400 mt-1">Ngày gửi: {new Date(c.created_at).toLocaleString('vi-VN')}</p>
+                          <p className="text-xs text-gray-400 mt-1">Sent date: {new Date(c.created_at).toLocaleString('en-US')}</p>
                           <p className="text-sm text-gray-600 mt-1 line-clamp-1">{c.summary}</p>
                         </div>
                         
@@ -415,7 +415,7 @@ export default function PatientApp() {
                             c.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' :
                             c.status === 'WAITING_DOCTOR' ? 'bg-red-100 text-red-800 animate-pulse' : 'bg-amber-100 text-amber-800 animate-pulse'
                           }`}>
-                            {c.status === 'COMPLETED' ? 'Đã có chỉ định' : 'Đang xử lý'}
+                            {c.status === 'COMPLETED' ? 'Instruction Received' : 'Processing'}
                           </span>
                           <ChevronRight className="w-5 h-5 text-gray-400" />
                         </div>
@@ -444,33 +444,33 @@ export default function PatientApp() {
             {/* Left: Copy & Value Prop */}
             <div className="text-center lg:text-left space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-800 font-semibold text-sm">
-                <ShieldCheck className="w-4 h-4" /> Dành riêng cho mẹ bầu dân tộc Tày
+                <ShieldCheck className="w-4 h-4" /> Dedicated to Tày ethnic pregnant mothers
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
-                An tâm thai kỳ,<br/>
+                Peace of Mind During Pregnancy,<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-700 to-pink-600">
-                  Hiểu rõ sức khỏe
+                  Understand Your Health
                 </span>
               </h1>
               <p className="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                ViTem giúp bạn kết nối nhanh chóng với bác sĩ và nữ hộ sinh. Chỉ cần chụp ảnh giấy khám, bác sĩ sẽ xem xét và gửi hướng dẫn chi tiết, an toàn bằng tiếng Tày cho bạn.
+                ViTeM helps you connect quickly with doctors and midwives. Just take a picture of your exam sheet, and the doctor will review it and send detailed, safe instructions in Tày for you.
               </p>
               
               {/* How it works simple steps */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-sm font-medium text-gray-500">
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
                   <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold">1</span>
-                  Chụp ảnh
+                  Take Photo
                 </div>
                 <ChevronRight className="w-4 h-4 hidden sm:block text-gray-300" />
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
                   <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold">2</span>
-                  Bác sĩ kiểm tra
+                  Doctor Reviews
                 </div>
                 <ChevronRight className="w-4 h-4 hidden sm:block text-gray-300" />
                 <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
                   <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold">3</span>
-                  Nhận hướng dẫn
+                  Get Instructions
                 </div>
               </div>
             </div>
@@ -489,16 +489,16 @@ export default function PatientApp() {
                     className="relative bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white p-8 space-y-6"
                   >
                     <div className="text-center">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Gửi hồ sơ ngay</h3>
-                      <p className="text-gray-500">Tải lên giấy khám thai, đơn thuốc hoặc kết quả siêu âm để bác sĩ kiểm tra.</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Submit Record Now</h3>
+                      <p className="text-gray-500">Upload pregnancy examination, prescription, or ultrasound results for the doctor to review.</p>
                     </div>
 
                     {/* Upload Zone */}
                     <div className="space-y-3">
-                      <label className="block text-gray-700 font-bold text-sm text-left">Giấy khám / Siêu âm / Đơn thuốc:</label>
+                      <label className="block text-gray-700 font-bold text-sm text-left">Medical Exam / Ultrasound / Prescription:</label>
                       {imagePreview ? (
                         <div className="relative rounded-2xl overflow-hidden border border-rose-200 aspect-[4/3] bg-gray-50 flex items-center justify-center group shadow-inner">
-                          <img src={imagePreview} alt="Xem trước" className="max-h-full max-w-full object-contain" />
+                          <img src={imagePreview} alt="Preview" className="max-h-full max-w-full object-contain" />
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
                               onClick={() => {
@@ -507,7 +507,7 @@ export default function PatientApp() {
                               }}
                               className="bg-red-600 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-lg hover:bg-red-700 transition-colors"
                             >
-                              Chọn ảnh khác
+                              Select another photo
                             </button>
                           </div>
                         </div>
@@ -520,9 +520,9 @@ export default function PatientApp() {
                             <UploadCloud className="w-7 h-7 text-rose-600" />
                           </div>
                           <p className="text-center text-rose-900 font-bold text-sm">
-                            Chụp ảnh hoặc Chọn từ thư viện
+                            Take a picture or Select from library
                           </p>
-                          <p className="text-xs text-gray-400 mt-1">Hỗ trợ JPG, PNG, GIF</p>
+                          <p className="text-xs text-gray-400 mt-1">Supports JPG, PNG, GIF</p>
                           <input 
                             id="file-upload" 
                             type="file" 
@@ -537,7 +537,7 @@ export default function PatientApp() {
                     {/* Inputs */}
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-gray-700 font-bold mb-2 text-left">Số điện thoại liên hệ:</label>
+                        <label className="block text-gray-700 font-bold mb-2 text-left">Contact Phone Number:</label>
                         <input 
                           type="tel" 
                           value={phone}
@@ -549,7 +549,7 @@ export default function PatientApp() {
 
                       {/* Triệu chứng nhanh */}
                       <div className="space-y-2 text-left">
-                        <label className="block text-gray-700 font-bold text-sm">Triệu chứng hiện tại (nếu có):</label>
+                        <label className="block text-gray-700 font-bold text-sm">Current Symptoms (if any):</label>
                         <div className="flex flex-wrap gap-2">
                           {SUGGESTED_SYMPTOMS.map((symptom) => {
                             const isSelected = selectedSymptoms.includes(symptom.id);
@@ -578,7 +578,7 @@ export default function PatientApp() {
                       </div>
 
                       <div className="flex items-center justify-between bg-rose-50 p-4 rounded-xl border border-rose-100">
-                        <span className="font-bold text-rose-900">Nhận hướng dẫn Tiếng Tày</span>
+                        <span className="font-bold text-rose-900">Get Instructions in Tày</span>
                         <button 
                           onClick={() => setTranslate(!translate)}
                           className={`w-14 h-8 rounded-full p-1 transition-colors ${translate ? "bg-rose-600" : "bg-gray-300"}`}
@@ -597,7 +597,7 @@ export default function PatientApp() {
                       disabled={!file || !phone}
                       className="w-full py-5 bg-gradient-to-r from-rose-700 to-rose-600 text-white rounded-xl font-bold text-xl shadow-lg shadow-rose-600/30 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 hover:shadow-xl hover:-translate-y-1"
                     >
-                      Gửi cho Bác Sĩ
+                      Send to Doctor
                     </button>
                   </motion.div>
                 )}
@@ -615,8 +615,8 @@ export default function PatientApp() {
                       <div className="absolute inset-0 border-4 border-rose-600 rounded-full border-t-transparent animate-spin"></div>
                       <ShieldCheck className="absolute inset-0 m-auto w-8 h-8 text-rose-600 animate-pulse" />
                     </div>
-                    <h2 className="text-2xl font-bold text-rose-800 mb-2">Đang mã hóa dữ liệu...</h2>
-                    <p className="text-gray-500">Hồ sơ của bạn đang được xử lý an toàn để chuyển đến bác sĩ.</p>
+                    <h2 className="text-2xl font-bold text-rose-800 mb-2">Processing data...</h2>
+                    <p className="text-gray-500">Your record is being securely processed to be forwarded to a doctor.</p>
                   </motion.div>
                 )}
 
@@ -651,7 +651,7 @@ export default function PatientApp() {
                       {/* Summary / Translation Section */}
                       <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
                         <h3 className="text-lg font-bold text-gray-900 mb-2">
-                          {translate ? "Tóm tắt (Tiếng Tày)" : "Tóm tắt tình trạng (Tiếng Việt)"}
+                          {translate ? "Summary (Tày)" : "Status Summary (English)"}
                         </h3>
                         <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm">
                           {translate && result.tay_translation ? (
@@ -665,16 +665,16 @@ export default function PatientApp() {
                       {/* Gợi ý chăm sóc sức khỏe */}
                       <div className="flex items-center gap-2 mt-4 text-left">
                         <Leaf className="w-6 h-6 text-emerald-600 font-bold" />
-                        <h3 className="text-xl font-bold text-gray-900">Gợi ý chăm sóc sức khỏe</h3>
+                        <h3 className="text-xl font-bold text-gray-900">Health Care Suggestions</h3>
                       </div>
-                      <p className="text-gray-500 text-sm text-left">Trong lúc chờ đợi phản hồi từ bác sĩ, bạn hãy chú ý:</p>
+                      <p className="text-gray-500 text-sm text-left">While waiting for doctor response, please note:</p>
                       
                       <div className="space-y-3">
                         {(result.health_tips && result.health_tips.length > 0 ? result.health_tips : [
-                          "Nằm nghỉ ngơi thoải mái trên giường, tránh làm việc nặng nhọc.",
-                          "Uống đủ nước ấm (từ 1.5 - 2 lít nước mỗi ngày).",
-                          "Theo dõi sát các biểu hiện bất thường như đau bụng, ra máu, nhức đầu.",
-                          "Nếu có dấu hiệu cấp cứu, liên hệ ngay trạm y tế gần nhất hoặc gọi 115."
+                          "Rest comfortably in bed, avoid heavy physical work.",
+                          "Drink enough warm water (1.5 - 2 liters per day).",
+                          "Closely monitor abnormal signs like abdominal pain, bleeding, headache.",
+                          "If emergency signs occur, contact the nearest health center or call 115 immediately."
                         ]).map((tip, idx) => (
                           <div key={idx} className="flex items-start bg-emerald-50 border border-emerald-100 p-4 rounded-xl text-left">
                             <CheckCircle2 className="w-5 h-5 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" />
@@ -686,7 +686,7 @@ export default function PatientApp() {
                       {result.status !== "COMPLETED" ? (
                         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 text-center">
                           <div className={`w-8 h-8 border-4 border-gray-200 rounded-full animate-spin mx-auto mb-2 ${result.status === 'WAITING_DOCTOR' ? 'border-t-red-500' : 'border-t-amber-500'}`}></div>
-                          <p className="text-sm font-bold text-gray-600">Đang chờ phản hồi từ {result.status === 'WAITING_DOCTOR' ? 'Bác Sĩ' : 'Nữ Hộ Sinh'}...</p>
+                          <p className="text-sm font-bold text-gray-600">Waiting for response from {result.status === 'WAITING_DOCTOR' ? 'Doctor' : 'Midwife'}...</p>
                         </div>
                       ) : (
                         <div className="space-y-4">
@@ -694,12 +694,12 @@ export default function PatientApp() {
                             <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                               <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                             </div>
-                            <p className="text-sm font-bold text-emerald-700">Tuyệt vời! Y Bác sĩ đã xác nhận hồ sơ của bạn.</p>
+                            <p className="text-sm font-bold text-emerald-700">Excellent! The healthcare provider has verified your record.</p>
                           </div>
                           {result.instruction_for_patient && (
                             <div className="bg-rose-50 p-6 rounded-2xl border border-rose-200 mt-4">
                               <h3 className="text-lg font-bold text-rose-800 mb-2 flex items-center">
-                                <AlertTriangle className="w-5 h-5 mr-2" /> Dặn dò từ Y Bác Sĩ
+                                <AlertTriangle className="w-5 h-5 mr-2" /> Doctor's Advice & Instructions
                               </h3>
                               <p className="text-rose-700 whitespace-pre-wrap">{result.instruction_for_patient}</p>
                             </div>
@@ -723,14 +723,14 @@ export default function PatientApp() {
           className={`flex-1 py-3 flex flex-col items-center gap-1 text-xs font-bold ${activeView === 'upload' ? 'text-rose-700' : 'text-gray-400'}`}
         >
           <UploadCloud className="w-5 h-5" />
-          Gửi hồ sơ
+          Submit Record
         </button>
         <button
           onClick={() => setActiveView("analytics")}
           className={`flex-1 py-3 flex flex-col items-center gap-1 text-xs font-bold ${activeView === 'analytics' ? 'text-rose-700' : 'text-gray-400'}`}
         >
           <BarChart3 className="w-5 h-5" />
-          Thống kê
+          Analytics
         </button>
       </div>
 
@@ -750,7 +750,7 @@ export default function PatientApp() {
             }`}>
               <div>
                 <h3 className="text-xl font-bold">{selectedHistoryCase.patientName}</h3>
-                <p className="text-xs text-white/80 mt-1">Hồ sơ khám thai ngày {new Date(selectedHistoryCase.created_at).toLocaleDateString('vi-VN')}</p>
+                <p className="text-xs text-white/80 mt-1">Pregnancy record on {new Date(selectedHistoryCase.created_at).toLocaleDateString('en-US')}</p>
               </div>
               <button 
                 onClick={() => setSelectedHistoryCase(null)}
@@ -767,7 +767,7 @@ export default function PatientApp() {
                 <HealthChecklist 
                   checklist={selectedHistoryCase.health_checklist}
                   patientName={selectedHistoryCase.patientName}
-                  date={new Date(selectedHistoryCase.created_at).toLocaleDateString('vi-VN')}
+                  date={new Date(selectedHistoryCase.created_at).toLocaleDateString('en-US')}
                   overallUrgency={selectedHistoryCase.urgency}
                 />
               )}
@@ -775,7 +775,7 @@ export default function PatientApp() {
               {/* Tóm tắt */}
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <h4 className="font-bold text-gray-900 text-sm mb-1">
-                  {translate ? "Tóm tắt (Tiếng Tày)" : "Tóm tắt tình trạng"}
+                  {translate ? "Summary (Tày)" : "Status Summary"}
                 </h4>
                 <div className="text-sm text-gray-700 whitespace-pre-wrap text-left">
                   {translate && selectedHistoryCase.tay_translation ? (
@@ -789,13 +789,13 @@ export default function PatientApp() {
               {/* Lời dặn */}
               {selectedHistoryCase.instruction_for_patient && (
                 <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-left">
-                  <h4 className="font-bold text-emerald-800 text-sm mb-1">Chỉ dẫn & Dặn dò của Bác Sĩ</h4>
+                  <h4 className="font-bold text-emerald-800 text-sm mb-1">Doctor's Advice & Instructions</h4>
                   <p className="text-sm text-emerald-700 whitespace-pre-wrap">{selectedHistoryCase.instruction_for_patient}</p>
                 </div>
               )}
               {selectedHistoryCase.status !== 'COMPLETED' && (
                 <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-center text-sm font-bold text-amber-800 animate-pulse">
-                  Hồ sơ đang được nhân viên y tế duyệt. Bạn sẽ nhận được thông báo khi có chỉ dẫn chính thức.
+                  Your record is being reviewed by a healthcare provider. You will be notified when official instructions are available.
                 </div>
               )}
             </div>
@@ -806,7 +806,7 @@ export default function PatientApp() {
                 onClick={() => setSelectedHistoryCase(null)}
                 className="px-5 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition-colors text-sm"
               >
-                Đóng
+                Close
               </button>
             </div>
           </motion.div>
