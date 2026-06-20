@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LayoutDashboard, FileText, Truck, Building2, Bell, Activity, Clock, CheckCircle, AlertTriangle, MapPin, Phone, Send, BarChart3, TrendingUp, PieChart as PieChartIcon, Wifi, WifiOff, Wrench, ChevronRight, Eye, ArrowUpRight, Users, Ambulance, Hospital, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UrgencyPieChart, WeeklyBarChart, TrendAreaChart, StatusPieChart } from "../components/ChartComponents";
+import { API_BASE_URL } from "../config";
 
 // =================== MOCK DATA ===================
 
@@ -440,7 +441,7 @@ export default function CommunityWorkerDashboard() {
 
   const fetchReports = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/documents");
+      const res = await fetch(`${API_BASE_URL}/api/documents`);
       const data = await res.json();
       if (data.success) {
         const mappedCases = data.cases.map(c => ({
@@ -465,7 +466,7 @@ export default function CommunityWorkerDashboard() {
 
   const handleUpdateReportStatus = async (reportId, newStatus, silent = false) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/documents/${reportId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/documents/${reportId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })

@@ -3,6 +3,7 @@ import { LayoutDashboard, ListChecks, Users, Bell, Search, AlertTriangle, FileTe
 import { motion } from "framer-motion";
 import HealthChecklist from "../components/HealthChecklist";
 import { UrgencyPieChart, WeeklyBarChart, TrendAreaChart } from "../components/ChartComponents";
+import { API_BASE_URL } from "../config";
 
 export default function WorkerDashboard({ role = "DOCTOR" }) {
   const [activeTab, setActiveTab] = useState("Queue");
@@ -57,7 +58,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
 
   const fetchCases = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/documents");
+      const response = await fetch(`${API_BASE_URL}/api/documents`);
       const data = await response.json();
       if (data.success) {
         setQueue(data.cases);
@@ -85,7 +86,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
   const handleSaveChanges = async () => {
     if (!selectedCase) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${selectedCase.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/documents/${selectedCase.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm)
@@ -107,7 +108,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
   const handleApprove = async () => {
     if (!selectedCase) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${selectedCase.id}/approve`, {
+      const res = await fetch(`${API_BASE_URL}/api/documents/${selectedCase.id}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm)
@@ -127,7 +128,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
   const handleEscalate = async () => {
     if (!selectedCase) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/documents/${selectedCase.id}/escalate`, {
+      const res = await fetch(`${API_BASE_URL}/api/documents/${selectedCase.id}/escalate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editForm)

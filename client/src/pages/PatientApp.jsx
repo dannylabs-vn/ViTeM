@@ -4,6 +4,7 @@ import { UploadCloud, AlertTriangle, PlayCircle, HeartPulse, ShieldCheck, PhoneC
 import { motion, AnimatePresence } from "framer-motion";
 import HealthChecklist from "../components/HealthChecklist";
 import { StatusPieChart, WeeklyBarChart } from "../components/ChartComponents";
+import { API_BASE_URL } from "../config";
 
 export default function PatientApp() {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export default function PatientApp() {
   const fetchPatientCases = async (phoneNumber) => {
     if (!phoneNumber) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/documents?phone=${phoneNumber}`);
+      const res = await fetch(`${API_BASE_URL}/api/documents?phone=${phoneNumber}`);
       const data = await res.json();
       if (data.success) {
         setPatientCases(data.cases);
@@ -120,7 +121,7 @@ export default function PatientApp() {
     if (result && result.status !== "COMPLETED" && caseId) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch("http://localhost:5000/api/documents");
+          const res = await fetch(`${API_BASE_URL}/api/documents`);
           const data = await res.json();
           if (data.success) {
             const updatedCase = data.cases.find(c => c.id === caseId);
@@ -178,7 +179,7 @@ export default function PatientApp() {
         formData.append("longitude", loggedInUser.longitude);
       }
 
-      const response = await fetch("http://localhost:5000/api/documents/upload", {
+      const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
         method: "POST",
         body: formData,
       });

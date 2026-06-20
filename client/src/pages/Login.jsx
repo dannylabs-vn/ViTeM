@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HeartPulse, Lock, User, AlertCircle, MapPin, Phone, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE_URL } from "../config";
 
 const MOCK_LOCATIONS = [
   { name: "Bản Khuôi, xã Quảng Khê", latitude: 22.425, longitude: 105.635 },
@@ -79,7 +80,7 @@ export default function Login() {
         password
       };
 
-      const res = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
