@@ -11,7 +11,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
   
   const filteredQueue = queue.filter(q => {
     if (role === "DOCTOR") return q.urgency === "RED";
-    if (role === "MIDWIFE") return q.urgency === "YELLOW";
+    if (role === "MIDWIFE") return q.urgency === "YELLOW" || q.urgency === "GREEN";
     return true;
   });
   const [loading, setLoading] = useState(true);
@@ -71,7 +71,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
             }
           }
         } else if (data.cases.length > 0) {
-          const relevant = data.cases.filter(q => role === "DOCTOR" ? q.urgency === "RED" : q.urgency === "YELLOW");
+          const relevant = data.cases.filter(q => role === "DOCTOR" ? q.urgency === "RED" : (q.urgency === "YELLOW" || q.urgency === "GREEN"));
           if (relevant.length > 0) setSelectedCase(relevant[0]);
         }
       }
@@ -323,7 +323,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">AI Confidence</span>
                 </div>
                 <div>
-                  <h3 className="text-4xl font-extrabold text-gray-900">{Math.round(queue.reduce((acc, curr) => acc + curr.confidence, 0) / (queue.length || 1))}%</h3>
+                  <h3 className="text-4xl font-extrabold text-gray-900">{Math.round(queue.reduce((acc, curr) => acc + (curr.confidence || 0), 0) / (queue.length || 1))}%</h3>
                   <p className="text-sm text-gray-500 mt-1">Average accuracy</p>
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function WorkerDashboard({ role = "DOCTOR" }) {
                 <span className="text-gray-500 text-sm ml-2 mb-1">total in queue</span>
               </div>
               <div className="flex space-x-2">
-                {role === "DOCTOR" ? <span className="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-md">Red Cases</span> : <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-md">Yellow Cases</span>}
+                {role === "DOCTOR" ? <span className="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-md">Red Cases</span> : <span className="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-md">Yellow & Green Cases</span>}
               </div>
             </div>
 

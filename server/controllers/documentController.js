@@ -71,16 +71,18 @@ async function uploadDocument(req, res) {
     let publicUrl = "mock_url";
     if (process.env.SUPABASE_URL && process.env.SUPABASE_URL !== "your_supabase_url") {
       const fileName = `docs/${Date.now()}_${req.file.originalname}`;
-      const { data: storageData } = await supabase.storage.from("medical-docs").upload(fileName, fileBuffer, { contentType: mimeType });
+      const { data: storageData, error: storageError } = await supabase.storage.from("medical-docs").upload(fileName, fileBuffer, { contentType: mimeType });
+      if (storageError) {
+        console.error("Supabase Storage Upload Error:", storageError);
+      }
       if (storageData) {
         const { data: pubData } = supabase.storage.from("medical-docs").getPublicUrl(fileName);
         publicUrl = pubData.publicUrl;
       }
     }
 
-    let status = "COMPLETED";
+    let status = "WAITING_MIDWIFE";
     if (aiResult.urgency === "RED") status = "WAITING_DOCTOR";
-    else if (aiResult.urgency === "YELLOW" || aiResult.confidence < 60) status = "WAITING_MIDWIFE";
 
     const caseData = {
       phone_number: phoneNumber,
@@ -101,7 +103,10 @@ async function uploadDocument(req, res) {
     };
 
     if (process.env.SUPABASE_URL && process.env.SUPABASE_URL !== "your_supabase_url") {
-      const { data: dbData } = await supabase.from("cases").insert([caseData]).select().single();
+      const { data: dbData, error: dbError } = await supabase.from("cases").insert([caseData]).select().single();
+      if (dbError) {
+        console.error("Supabase Database Insert Error:", dbError);
+      }
       if (dbData) {
         fs.unlinkSync(req.file.path);
         return res.status(200).json({ success: true, case: dbData });
